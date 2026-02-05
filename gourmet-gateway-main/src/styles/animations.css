@@ -1,0 +1,52 @@
+/* Animation globals pour éviter les style inline */
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-20px);
+    opacity: 0.5;
+  }
+}
+
+.animate-floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.gradient-cream {
+  background: linear-gradient(135deg, #FFFBF0 0%, #FFF8E7 25%, #FFEFD5 50%, #FFF8E7 75%, #FFFBF0 100%);
+}
+
+.gradient-gold-glow {
+  background: radial-gradient(circle, rgba(218, 165, 32, 0.4) 0%, transparent 70%);
+  filter: blur(40px);
+}
+
+.gradient-gold-glow-lg {
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+  filter: blur(50px);
+}
+
+/* Variante pour les radial gradients */
+.radial-gold-subtle {
+  background: radial-gradient(circle at 20% 50%, rgba(217, 119, 6, 0.15) 0%, transparent 50%);
+}
+
+.radial-gold-light {
+  background: radial-gradient(circle at 80% 80%, rgba(253, 185, 19, 0.1) 0%, transparent 50%);
+}

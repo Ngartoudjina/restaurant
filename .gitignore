@@ -1,0 +1,36 @@
+# Secrets and credentials
+**/serviceAccountKey.json
+*.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+/venv/
+*.egg-info/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Uploads (if needed)
+uploads/
