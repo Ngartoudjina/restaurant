@@ -39,12 +39,22 @@ app.use(helmet({
 }));
 
 // CORS configuré selon l'environnement
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? [process.env.FRONTEND_URL || 'https://votre-domaine.com']
-  : ['http://localhost:8080', 'http://localhost:3000'];
+// On accepte une ou plusieurs origines en production via la variable FRONTEND_URL
+// Exemple: FRONTEND_URL="https://gourmet.onrender.com,https://admin.mondomaine.com"
+const defaultLocalOrigins = ['http://localhost:8080', 'http://localhost:3000'];
+const prodOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(s => s.trim())
+  : ['https://votre-domaine.com'];
+
+const allowedOrigins = process.env.NODE_ENV === 'production' ? prodOrigins : defaultLocalOrigins;
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., server-to-server, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS policy: Origin non autorisée'), false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
