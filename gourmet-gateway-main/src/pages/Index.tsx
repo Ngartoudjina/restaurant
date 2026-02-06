@@ -448,66 +448,159 @@ export default function Index() {
       </section>
 
       {/* CTA Section - Modern Design */}
-      <section className="relative py-32 overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-gold/10 via-black to-gold/5" />
+      <section className="relative py-24 sm:py-32 lg:py-40 overflow-hidden">
+        {/* Ultra Premium Gradient Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-amber-900/20 to-black" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        </div>
         
-        {/* Animated Elements */}
+        {/* Animated Decorative Elements */}
         <motion.div
-          className="absolute top-0 right-20 w-72 h-72 bg-gold/20 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-10 right-20 w-72 h-72 bg-gradient-to-br from-gold/40 to-amber-500/20 rounded-full blur-3xl"
+          animate={{ 
+            scale: [1, 1.3, 1],
+            opacity: [0.2, 0.4, 0.2],
+            x: [0, 30, 0]
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-br from-amber-600/30 to-transparent rounded-full blur-3xl"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.35, 0.15],
+            y: [0, -50, 0]
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <motion.h2 
-            className="font-serif text-4xl md:text-5xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            Prêt pour une expérience <span className="text-gold">unique</span> ?
-          </motion.h2>
+        {/* Decorative line elements */}
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-50" />
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-50" />
 
-          <motion.p 
-            className="text-white/80 mb-10 max-w-2xl mx-auto text-lg"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            Réservez votre table dès maintenant ou commandez vos plats préférés à emporter.
-          </motion.p>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Badge */}
+            <motion.div 
+              className="inline-flex items-center gap-2 mb-6 sm:mb-8"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/40 bg-gold/10 backdrop-blur-sm">
+                <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+                <span className="text-sm font-semibold text-gold">Réservation & Livraison</span>
+              </span>
+            </motion.div>
 
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <Link to="/reservation">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button size="lg" className="bg-gradient-to-r from-gold to-yellow-300 text-black hover:from-yellow-300 hover:to-gold font-semibold text-base px-8 h-12 shadow-lg hover:shadow-xl transition-all duration-300">
-                  Réserver une table
-                </Button>
-              </motion.div>
-            </Link>
-            <Link to="/menu">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button size="lg" className="border-2 border-gold text-white hover:bg-gold hover:text-black font-semibold text-base px-8 h-12">
-                  Commander en ligne
-                </Button>
-              </motion.div>
-            </Link>
-          </motion.div>
+            {/* Main Heading */}
+            <motion.h2 
+              className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              Prêt pour une expérience 
+              <br />
+              <span className="relative inline-block mt-2">
+                <span className="relative z-10 bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent">
+                  véritablement unique
+                </span>
+                <motion.div
+                  className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-gold to-amber-500"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "100%" }}
+                  transition={{ duration: 1, delay: 0.3 }}
+                  viewport={{ once: true }}
+                />
+              </span>
+              <span className="text-white"> ?</span>
+            </motion.h2>
+
+            {/* Descriptive Text */}
+            <motion.p 
+              className="text-base sm:text-lg lg:text-xl text-white/75 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              Découvrez nos délicieuses créations culinaires en réservant directement votre table 
+              ou en passant commande pour savourer à la maison.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              {/* Reservation Button */}
+              <Link to="/reservation" className="flex-shrink-0">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto relative overflow-hidden group bg-gradient-to-r from-gold via-yellow-300 to-gold text-black hover:text-white font-bold text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 shadow-2xl shadow-gold/50 hover:shadow-gold/70 transition-all duration-300 border-0"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="relative flex items-center justify-center gap-2">
+                      <span>🍽️</span>
+                      Réserver une table
+                    </span>
+                  </Button>
+                </motion.div>
+              </Link>
+
+              {/* Order Button */}
+              <Link to="/menu" className="flex-shrink-0">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto relative overflow-hidden group border-2 border-gold/60 bg-transparent hover:bg-gradient-to-r hover:from-gold/20 hover:to-gold/10 text-white hover:text-gold font-bold text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 transition-all duration-300 backdrop-blur-sm"
+                  >
+                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="relative flex items-center justify-center gap-2">
+                      <span>🛵</span>
+                      Commander en ligne
+                    </span>
+                  </Button>
+                </motion.div>
+              </Link>
+            </motion.div>
+
+            {/* Trust Indicators */}
+            <motion.div
+              className="flex flex-wrap justify-center gap-6 sm:gap-8 mt-12 sm:mt-16 pt-12 sm:pt-16 border-t border-gold/20"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-center">
+                <p className="text-gold text-2xl sm:text-3xl font-bold">24/7</p>
+                <p className="text-white/60 text-xs sm:text-sm mt-1">Disponible</p>
+              </div>
+              <div className="text-center">
+                <p className="text-gold text-2xl sm:text-3xl font-bold">⭐</p>
+                <p className="text-white/60 text-xs sm:text-sm mt-1">5/5 Avis</p>
+              </div>
+              <div className="text-center">
+                <p className="text-gold text-2xl sm:text-3xl font-bold">🔥</p>
+                <p className="text-white/60 text-xs sm:text-sm mt-1">Trending</p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
     </Layout>
