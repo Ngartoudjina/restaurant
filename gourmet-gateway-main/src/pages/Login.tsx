@@ -153,17 +153,6 @@ export default function Login() {
                     </Link>
                   </p>
                 </div>
-
-                {/* Demo credentials */}
-                <div className="mt-6 p-4 bg-muted rounded-lg">
-                  <p className="text-sm font-medium mb-2">Comptes de démonstration :</p>
-                  <p className="text-xs text-muted-foreground">
-                    Admin: admin@legourmet.fr / Admin123!
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Client: marie@email.com / User123!
-                  </p>
-                </div>
               </CardContent>
             </Card>
           </div>
