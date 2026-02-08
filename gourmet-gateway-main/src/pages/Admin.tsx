@@ -152,7 +152,7 @@ export default function Admin() {
       
       // Essayer de récupérer depuis l'API
       try {
-        const response = await api.get('/reservations');
+        const response = await api.get('/api/reservations');
         const reservationsData = Array.isArray(response.data.data)
           ? response.data.data
           : Array.isArray(response.data)
@@ -180,7 +180,7 @@ export default function Admin() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoadingProducts(true);
-      const response = await api.get('/products');
+      const response = await api.get('/api/products');
       const productsData = Array.isArray(response.data.data)
         ? response.data.data
         : Array.isArray(response.data)
@@ -203,7 +203,7 @@ export default function Admin() {
   const fetchMessages = useCallback(async () => {
     try {
       setLoadingMessages(true);
-      const response = await api.get('/messages', {
+      const response = await api.get('/api/messages', {
         params: { limit: 50 }
       });
 
@@ -237,7 +237,7 @@ export default function Admin() {
   const updateOrderStatus = async (orderId: string, status: string) => {
     try {
       await axios.put(
-        `${API_URL}/orders/${orderId}/status`,
+        `${API_URL}/api/orders/${orderId}/status`,
         { status },
         {
           headers: {
@@ -267,7 +267,7 @@ export default function Admin() {
 
   const handleStatusChange = async (orderId: string, status: string) => {
     try {
-      await api.put(`/orders/${orderId}/status`, { status });
+      await api.put(`/api/orders/${orderId}/status`, { status });
 
       // Update local state
       setOrders(orders.map(o => 
@@ -309,7 +309,7 @@ export default function Admin() {
     if (!confirm('Supprimer ce plat définitivement ?')) return;
 
     try {
-      await api.delete(`/products/${productId}`);
+      await api.delete(`/api/products/${productId}`);
 
       setProducts(products.filter(p => p.id !== productId));
 
@@ -351,7 +351,7 @@ export default function Admin() {
 
     if (editingProduct) {
       // Update - Le token est ajouté automatiquement par l'intercepteur
-      await api.put(`/products/${editingProduct.id}`, data, {
+      await api.put(`/api/products/${editingProduct.id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -363,7 +363,7 @@ export default function Admin() {
       });
     } else {
       // Create
-      await api.post('/products', data, {
+      await api.post('/api/products', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

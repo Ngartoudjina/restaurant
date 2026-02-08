@@ -77,7 +77,7 @@ export default function OrderHistory() {
 
       // Essayer de récupérer depuis l'API
       try {
-        const response = await axios.get(`${API_URL}/orders/my-orders`, {
+        const response = await axios.get(`${API_URL}/api/orders/my-orders`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },

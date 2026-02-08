@@ -58,7 +58,7 @@ export default function Index() {
       setLoadingProducts(true);
 
       // Récupérer tous les produits depuis le backend
-      const response = await axios.get(`${API_URL}/products`);
+      const response = await axios.get(`${API_URL}/api/products`);
       const raw = response.data?.data ?? response.data ?? [];
 
       // Normaliser les produits pour tolérer plusieurs formats (imageUrl, img, categoryId, price string...)

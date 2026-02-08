@@ -123,7 +123,7 @@ export default function Checkout() {
         description: `Votre commande #${orderId.slice(-6)} a été enregistrée.`,
       });
 
-      navigate(`/order-confirmation/${orderId}`);
+      navigate(`/api/order-confirmation/${orderId}`);
     } catch (error) {
       console.error('Erreur création commande:', error);
       const errorMessage = axios.isAxiosError(error)

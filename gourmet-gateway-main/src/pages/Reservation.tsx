@@ -139,7 +139,7 @@ export default function ReservationPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${API_URL}/reservations`, {
+      const response = await axios.post(`${API_URL}/api/reservations`, {
         name: data.name,
         email: data.email,
         phone: data.phone,

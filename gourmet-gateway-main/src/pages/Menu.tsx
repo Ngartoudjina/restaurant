@@ -99,7 +99,7 @@ export default function Menu() {
       setError(null);
 
       // Récupérer les produits depuis le backend
-      const productsResponse = await axios.get(`${API_URL}/products`);
+      const productsResponse = await axios.get(`${API_URL}/api/products`);
       const productsData = productsResponse.data.data || productsResponse.data;
       
       // Filtrer uniquement les produits disponibles
