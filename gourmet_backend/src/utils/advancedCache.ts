@@ -62,19 +62,22 @@ export async function getFromCache<T>(key: string): Promise<T | null> {
     }
 
     // L2 Cache - Redis (si disponible)
-    if (redisConnected && redisClient) {
-      const l2Value = await redisClient.get(key);
-      if (l2Value) {
-        try {
-          const parsed = JSON.parse(l2Value);
-          l1Cache.set(key, parsed); // Promouvoir en L1
-          console.log(`✅ L2 Cache HIT (Redis): ${key}`);
-          return parsed as T;
-        } catch {
-          return null;
-        }
-      }
+    // L2 Cache - Redis (si disponible)
+if (redisConnected && redisClient) {
+  const l2Value = await redisClient.get(key);
+  if (l2Value) {
+    try {
+      // Convertir Buffer en string si nécessaire
+      const stringValue = typeof l2Value === 'string' ? l2Value : l2Value.toString('utf-8');
+      const parsed = JSON.parse(stringValue);
+      l1Cache.set(key, parsed); // Promouvoir en L1
+      console.log(`✅ L2 Cache HIT (Redis): ${key}`);
+      return parsed as T;
+    } catch {
+      return null;
     }
+  }
+}
 
     console.log(`❌ Cache MISS: ${key}`);
     return null;
