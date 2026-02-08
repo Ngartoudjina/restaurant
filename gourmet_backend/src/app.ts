@@ -49,30 +49,15 @@ const allowedOrigins = process.env.NODE_ENV === 'production' ? prodOrigins : def
 
 app.use(cors({
   origin: (origin, callback) => {
-
-    console.log("🌍 Origin reçue:", origin);
-    console.log("✅ Origins autorisées:", allowedOrigins);
-
-    // Requests sans origin (Postman, serveur, mobile apps)
-    if (!origin) {
-      console.log("⚠️ Pas d'origine -> autorisé");
-      return callback(null, true);
-    }
-
-    if (allowedOrigins.includes(origin)) {
-      console.log("✅ Origin autorisée:", origin);
-      return callback(null, true);
-    }
-
-    console.log("❌ Origin REFUSÉE:", origin);
-
+    // Allow requests with no origin (e.g., server-to-server, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error('CORS policy: Origin non autorisée'), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
 
 // Compression aggressive (niveau 6 pour balance compression/CPU)
 app.use(compression({
