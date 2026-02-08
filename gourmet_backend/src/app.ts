@@ -40,25 +40,39 @@ app.use(helmet({
 
 // CORS configuré selon l'environnement
 // On accepte une ou plusieurs origines en production via la variable FRONTEND_URL
-// Exemple: FRONTEND_URL="https://gourmet.onrender.com,https://admin.mondomaine.com"
 const defaultLocalOrigins = ['http://localhost:8080', 'http://localhost:3000'];
 const prodOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(s => s.trim())
-  : ['https://votre-domaine.com'];
+  : ['https://gourmet-wc5h.onrender.com'];
 
 const allowedOrigins = process.env.NODE_ENV === 'production' ? prodOrigins : defaultLocalOrigins;
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., server-to-server, mobile apps)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+
+    console.log("🌍 Origin reçue:", origin);
+    console.log("✅ Origins autorisées:", allowedOrigins);
+
+    // Requests sans origin (Postman, serveur, mobile apps)
+    if (!origin) {
+      console.log("⚠️ Pas d'origine -> autorisé");
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      console.log("✅ Origin autorisée:", origin);
+      return callback(null, true);
+    }
+
+    console.log("❌ Origin REFUSÉE:", origin);
+
     return callback(new Error('CORS policy: Origin non autorisée'), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 
 // Compression aggressive (niveau 6 pour balance compression/CPU)
 app.use(compression({
@@ -157,5 +171,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
+
+
 
 export default app;
