@@ -40,7 +40,7 @@ app.use(helmet({
 
 // CORS configuré selon l'environnement
 // On accepte une ou plusieurs origines en production via la variable FRONTEND_URL
-const defaultLocalOrigins = ['http://localhost:8080', 'http://localhost:3000'];
+const defaultLocalOrigins = ['http://localhost:8080'];
 const prodOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(s => s.trim())
   : ['https://gourmet-wc5h.onrender.com'];
