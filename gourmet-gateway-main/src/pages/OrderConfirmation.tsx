@@ -1,41 +1,118 @@
 import { Link, useParams } from 'react-router-dom';
-import { CheckCircle, Clock, MapPin, ShoppingBag, Gift } from 'lucide-react';
+import { CheckCircle, Clock, MapPin, ShoppingBag, Gift, Loader2 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
-import { Order } from '@/lib/data';
+import axios from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
 import { siteConfig } from '@/config/site';
 
-const formatFCFA = (amount: number) => `${amount.toLocaleString('fr-FR')} FCFA`;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const formatFCFA = (amount: number) => `${Number(amount || 0).toLocaleString('fr-FR')} FCFA`;
+
+interface OrderItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+}
+
+interface Order {
+  id: string;
+  items: OrderItem[];
+  subtotal?: number;
+  discountAmount?: number;
+  deliveryFee?: number;
+  total: number;
+  type: 'delivery' | 'takeaway' | 'dine-in';
+  status: string;
+  deliveryAddress?: { street: string; city: string; zipCode: string };
+  scheduledFor?: number;
+}
 
 export default function OrderConfirmation() {
   const { orderId } = useParams();
+  const { getToken } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const orders = JSON.parse(localStorage.getItem('legourmet_orders') || '[]');
-    const found = orders.find((o: Order) => o.id === orderId);
-    setOrder(found || null);
-  }, [orderId]);
+    let cancelled = false;
 
-  if (!order) {
+    const fetchOrder = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const token = (await getToken()) || localStorage.getItem('authToken');
+        if (!token) {
+          throw new Error('Vous devez être connecté pour voir cette commande.');
+        }
+
+        const response = await axios.get(`${API_URL}/orders/${orderId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = response.data?.data ?? response.data;
+        if (!cancelled) setOrder(data);
+      } catch (err) {
+        if (cancelled) return;
+        const message = axios.isAxiosError(err)
+          ? err.response?.data?.error || 'Commande introuvable'
+          : err instanceof Error
+            ? err.message
+            : 'Une erreur est survenue';
+        setError(message);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
+    fetchOrder();
+    return () => {
+      cancelled = true;
+    };
+  }, [orderId, getToken]);
+
+  if (isLoading) {
     return (
       <Layout>
-        <section className="py-20 text-center">
-          <h1 className="font-serif text-3xl font-bold mb-4">Commande introuvable</h1>
-          <Link to="/">
-            <Button>Retour à l'accueil</Button>
-          </Link>
+        <section className="py-20 min-h-[50vh] flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-gold" />
+            <p className="text-muted-foreground">Chargement de votre commande...</p>
+          </div>
         </section>
       </Layout>
     );
   }
 
-  const estimatedTime = new Date(order.scheduledFor).toLocaleTimeString('fr-FR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  if (error || !order) {
+    return (
+      <Layout>
+        <section className="py-20 text-center">
+          <h1 className="font-serif text-3xl font-bold mb-4">Commande introuvable</h1>
+          {error && <p className="text-muted-foreground mb-6">{error}</p>}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/">
+              <Button variant="outline">Retour à l'accueil</Button>
+            </Link>
+            <Link to="/orders">
+              <Button>Mes commandes</Button>
+            </Link>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
+
+  const estimatedTime = order.scheduledFor
+    ? new Date(order.scheduledFor).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    : null;
 
   return (
     <Layout>
@@ -67,7 +144,8 @@ export default function OrderConfirmation() {
                   <div className="text-left">
                     <p className="text-sm text-muted-foreground">Estimation</p>
                     <p className="font-medium">
-                      {order.type === 'delivery' ? 'Livraison vers' : 'Prêt vers'} {estimatedTime}
+                      {order.type === 'delivery' ? 'Livraison' : 'Prêt'}
+                      {estimatedTime ? ` vers ${estimatedTime}` : ''}
                     </p>
                   </div>
                 </CardContent>
@@ -110,6 +188,20 @@ export default function OrderConfirmation() {
                       </span>
                     </div>
                   ))}
+
+                  {(order.discountAmount ?? 0) > 0 && (
+                    <div className="flex justify-between text-green-600 text-sm">
+                      <span>Réduction</span>
+                      <span>-{formatFCFA(order.discountAmount!)}</span>
+                    </div>
+                  )}
+                  {(order.deliveryFee ?? 0) > 0 && (
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Livraison</span>
+                      <span>{formatFCFA(order.deliveryFee!)}</span>
+                    </div>
+                  )}
+
                   <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
                     <span>Total</span>
                     <span className="text-primary">{formatFCFA(order.total)}</span>
