@@ -95,6 +95,20 @@ export default {
         'elegant': '0 4px 20px -2px hsl(30, 5%, 10%, 0.08)',
         'card': '0 2px 12px -2px hsl(30, 5%, 10%, 0.06)',
         'glow': '0 0 40px hsl(43, 74%, 49%, 0.2)'
+      },
+      keyframes: {
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' }
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' }
+        }
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out'
       }
     }
   },

@@ -214,6 +214,20 @@
   }
 }
 
+/* Accessibilité : respecter la préférence « réduire les animations ».
+   Neutralise les animations CSS infinies (blobs, spin, ping…) et raccourcit
+   les transitions pour les utilisateurs sensibles au mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Custom particle positions */
 .group:hover .animate-particle:nth-child(1) { --tx: 30px; --ty: -30px; }
 .group:hover .animate-particle:nth-child(2) { --tx: -30px; --ty: -30px; }

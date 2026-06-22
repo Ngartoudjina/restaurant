@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 import heroImage from '@/assets/hero-restaurant.jpg';
 import { mockReviews } from '@/lib/data';
+import { siteConfig, whatsappUrl } from '@/config/site';
+import { NewsletterSignup } from '@/components/NewsletterSignup';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -159,7 +161,7 @@ export default function Index() {
           >
             <Sparkles className="h-4 w-4 text-gold" />
             <span className="text-gold font-medium tracking-wider uppercase text-sm">
-              Restaurant Gastronomique
+              Gastronomie béninoise · Cotonou
             </span>
           </motion.div>
 
@@ -172,43 +174,55 @@ export default function Index() {
             </span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             variants={itemVariants}
             className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-8 leading-relaxed"
           >
-            Une expérience culinaire d'exception où chaque plat raconte une histoire de <span className="text-gold font-semibold">passion</span>, de <span className="text-gold font-semibold">tradition</span> et d'<span className="text-gold font-semibold">innovation</span>
+            Le meilleur de la <span className="text-gold font-semibold">cuisine béninoise</span>, préparé avec des produits frais et locaux. Commandez en ligne avec <span className="text-gold font-semibold">livraison rapide à Cotonou</span>, ou réservez votre table.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Link to="/reservation">
+            <Link to="/menu">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Button size="lg" className="bg-gradient-to-r from-gold to-yellow-300 text-black hover:from-yellow-300 hover:to-gold font-semibold text-base px-8 h-12 shadow-lg hover:shadow-xl transition-all duration-300">
                   <Sparkles className="mr-2 h-5 w-5" />
-                  Réserver une table
+                  Commander en ligne
                 </Button>
               </motion.div>
             </Link>
-            <Link to="/menu">
+            <Link to="/reservation">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="border-2 border-white/50 text-white hover:bg-white/10 hover:border-gold px-8 h-12 font-semibold text-base backdrop-blur-sm transition-all duration-300"
                 >
-                  Découvrir le menu
+                  Réserver une table
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </motion.div>
             </Link>
           </motion.div>
+
+          {/* Offre de bienvenue mise en avant dès le hero */}
+          <motion.p
+            variants={itemVariants}
+            className="mt-6 inline-flex items-center gap-2 text-sm text-white/80"
+          >
+            <span>🎁</span>
+            <span>
+              <span className="text-gold font-semibold">{siteConfig.promo.percent}%</span> sur votre 1ʳᵉ commande avec le code{' '}
+              <span className="text-gold font-bold tracking-wider">{siteConfig.promo.code}</span>
+            </span>
+          </motion.p>
         </motion.div>
 
         {/* Scroll Indicator */}
@@ -438,7 +452,7 @@ export default function Index() {
                   </motion.div>
                   <div>
                     <p className="font-semibold text-white">{review.userName}</p>
-                    <p className="text-sm text-white/50">Client vérifiés</p>
+                    <p className="text-sm text-white/50">Client vérifié</p>
                   </div>
                 </div>
               </motion.div>
@@ -446,6 +460,9 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
+
+      {/* Newsletter / capture d'email avec code de bienvenue */}
+      <NewsletterSignup />
 
       {/* CTA Section - Modern Design */}
       <section className="relative py-24 sm:py-32 lg:py-40 overflow-hidden">
@@ -491,7 +508,7 @@ export default function Index() {
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/40 bg-gold/10 backdrop-blur-sm">
                 <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-                <span className="text-sm font-semibold text-gold">Réservation & Livraison</span>
+                <span className="text-sm font-semibold text-gold">Commande, Livraison & Réservation</span>
               </span>
             </motion.div>
 
@@ -532,44 +549,25 @@ export default function Index() {
               ou en passant commande pour savourer à la maison.
             </motion.p>
 
-            {/* CTA Buttons */}
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center"
+            {/* CTA Buttons — la commande est l'action principale */}
+            <motion.div
+              className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-5 justify-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
               viewport={{ once: true }}
             >
-              {/* Reservation Button */}
-              <Link to="/reservation" className="flex-shrink-0">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button 
-                    size="lg" 
-                    className="w-full sm:w-auto relative overflow-hidden group bg-gradient-to-r from-gold via-yellow-300 to-gold text-black hover:text-white font-bold text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 shadow-2xl shadow-gold/50 hover:shadow-gold/70 transition-all duration-300 border-0"
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <span className="relative flex items-center justify-center gap-2">
-                      <span>🍽️</span>
-                      Réserver une table
-                    </span>
-                  </Button>
-                </motion.div>
-              </Link>
-
-              {/* Order Button */}
+              {/* Order Button — action principale */}
               <Link to="/menu" className="flex-shrink-0">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button 
-                    size="lg" 
-                    className="w-full sm:w-auto relative overflow-hidden group border-2 border-gold/60 bg-transparent hover:bg-gradient-to-r hover:from-gold/20 hover:to-gold/10 text-white hover:text-gold font-bold text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 transition-all duration-300 backdrop-blur-sm"
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto relative overflow-hidden group bg-gradient-to-r from-gold via-yellow-300 to-gold text-black hover:text-white font-bold text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 shadow-2xl shadow-gold/50 hover:shadow-gold/70 transition-all duration-300 border-0"
                   >
-                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <span className="relative flex items-center justify-center gap-2">
                       <span>🛵</span>
                       Commander en ligne
@@ -577,28 +575,61 @@ export default function Index() {
                   </Button>
                 </motion.div>
               </Link>
+
+              {/* WhatsApp Button — canal prioritaire au Bénin */}
+              <a
+                href={whatsappUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto bg-[#25D366] hover:bg-[#1ebe5b] text-black font-bold text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 shadow-2xl shadow-[#25D366]/30 transition-all duration-300 border-0 flex items-center justify-center gap-2"
+                  >
+                    <span>💬</span>
+                    Commander sur WhatsApp
+                  </Button>
+                </motion.div>
+              </a>
+
+              {/* Reservation Button — action secondaire */}
+              <Link to="/reservation" className="flex-shrink-0">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto relative overflow-hidden group border-2 border-gold/60 bg-transparent hover:bg-gradient-to-r hover:from-gold/20 hover:to-gold/10 text-white hover:text-gold font-bold text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 transition-all duration-300 backdrop-blur-sm"
+                  >
+                    <span className="relative flex items-center justify-center gap-2">
+                      <span>🍽️</span>
+                      Réserver une table
+                    </span>
+                  </Button>
+                </motion.div>
+              </Link>
             </motion.div>
 
-            {/* Trust Indicators */}
+            {/* Trust Indicators — arguments honnêtes et vérifiables */}
             <motion.div
-              className="flex flex-wrap justify-center gap-6 sm:gap-8 mt-12 sm:mt-16 pt-12 sm:pt-16 border-t border-gold/20"
+              className="flex flex-wrap justify-center gap-6 sm:gap-10 mt-12 sm:mt-16 pt-12 sm:pt-16 border-t border-gold/20"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <div className="text-center">
-                <p className="text-gold text-2xl sm:text-3xl font-bold">24/7</p>
-                <p className="text-white/60 text-xs sm:text-sm mt-1">Disponible</p>
-              </div>
-              <div className="text-center">
-                <p className="text-gold text-2xl sm:text-3xl font-bold">⭐</p>
-                <p className="text-white/60 text-xs sm:text-sm mt-1">5/5 Avis</p>
-              </div>
-              <div className="text-center">
-                <p className="text-gold text-2xl sm:text-3xl font-bold">🔥</p>
-                <p className="text-white/60 text-xs sm:text-sm mt-1">Trending</p>
-              </div>
+              {siteConfig.trust.map((item) => (
+                <div key={item.label} className="text-center">
+                  <p className="text-gold text-xl sm:text-2xl font-bold">{item.value}</p>
+                  <p className="text-white/60 text-xs sm:text-sm mt-1">{item.label}</p>
+                </div>
+              ))}
             </motion.div>
           </div>
         </div>

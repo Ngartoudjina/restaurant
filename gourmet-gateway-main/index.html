@@ -3,20 +3,88 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Gourmet</title>
-    <meta name="description" content="Le Gourmet à votre service" />
-    <meta name="author" content="Gourmet" />
+    <meta name="theme-color" content="#0a0a0a" />
 
-    <!-- TODO: Update og:title to match your application name -->
-    <meta property="og:title" content="Gourmet-App" />
-    <meta property="og:description" content="Le Gourmet à votre service" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="gourmet.png" />
+    <title>Le Gourmet — Restaurant gastronomique béninois à Cotonou</title>
+    <meta
+      name="description"
+      content="Le Gourmet, restaurant gastronomique béninois à Cotonou. Réservez votre table ou commandez en ligne — livraison rapide à domicile. Cuisine raffinée, produits frais et locaux."
+    />
+    <meta
+      name="keywords"
+      content="restaurant Cotonou, gastronomie béninoise, livraison repas Cotonou, réservation restaurant Bénin, commander en ligne Cotonou, Le Gourmet"
+    />
+    <meta name="author" content="Le Gourmet" />
+    <link rel="canonical" href="https://le-gourmet.bj/" />
 
+    <!-- Open Graph -->
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:site_name" content="Le Gourmet" />
+    <meta property="og:title" content="Le Gourmet — Restaurant gastronomique béninois à Cotonou" />
+    <meta
+      property="og:description"
+      content="Cuisine gastronomique béninoise à Cotonou. Réservez votre table ou commandez en ligne, livraison rapide à domicile."
+    />
+    <meta property="og:url" content="https://le-gourmet.bj/" />
+    <meta property="og:image" content="https://le-gourmet.bj/gourmet.png" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="gourmet.png" />
+    <meta name="twitter:title" content="Le Gourmet — Restaurant gastronomique béninois à Cotonou" />
+    <meta
+      name="twitter:description"
+      content="Cuisine gastronomique béninoise à Cotonou. Réservez votre table ou commandez en ligne, livraison rapide à domicile."
+    />
+    <meta name="twitter:image" content="https://le-gourmet.bj/gourmet.png" />
+
+    <!-- Données structurées : Restaurant (rich results Google : horaires, avis, menu) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "Le Gourmet",
+        "description": "Restaurant gastronomique béninois à Cotonou. Réservation et commande en ligne avec livraison.",
+        "servesCuisine": ["Béninoise", "Africaine", "Gastronomique"],
+        "url": "https://le-gourmet.bj/",
+        "telephone": "+229 59 33 44 83",
+        "priceRange": "$$",
+        "image": "https://le-gourmet.bj/gourmet.png",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Carré 1234, Quartier Haie Vive",
+          "addressLocality": "Cotonou",
+          "addressCountry": "BJ"
+        },
+        "acceptsReservations": true,
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "12:00",
+            "closes": "14:30"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "19:00",
+            "closes": "22:30"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Saturday", "Sunday"],
+            "opens": "12:00",
+            "closes": "15:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Saturday", "Sunday"],
+            "opens": "19:00",
+            "closes": "23:00"
+          }
+        ]
+      }
+    </script>
   </head>
 
   <body>

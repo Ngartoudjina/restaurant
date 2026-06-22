@@ -257,7 +257,7 @@ export default function Account() {
                             <span className="text-sm">
                               {order.type === 'delivery' ? 'Livraison' : order.type === 'takeaway' ? 'À emporter' : 'Sur place'}
                             </span>
-                            <span className="font-bold text-primary">{order.total.toFixed(2)}€</span>
+                            <span className="font-bold text-primary">{order.total.toLocaleString('fr-FR')} FCFA</span>
                           </div>
                         </div>
                       ))}

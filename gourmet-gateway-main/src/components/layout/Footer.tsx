@@ -1,6 +1,14 @@
 import { Link } from 'react-router-dom';
-import { ChefHat, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUpRight } from 'lucide-react';
+import { ChefHat, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, MessageCircle, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { siteConfig, whatsappUrl } from '@/config/site';
+
+// Réseaux sociaux : on n'affiche que ceux qui ont une URL renseignée.
+const socialLinks = [
+  { icon: Facebook, href: siteConfig.social.facebook, label: 'Facebook' },
+  { icon: Instagram, href: siteConfig.social.instagram, label: 'Instagram' },
+  { icon: Twitter, href: siteConfig.social.twitter, label: 'Twitter / X' },
+].filter((s) => s.href);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -76,30 +84,31 @@ export function Footer() {
                 <ChefHat className="h-6 w-6 text-gold" />
               </motion.div>
               <span className="font-serif text-2xl font-bold bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent">
-                Le Gourmet
+                {siteConfig.name}
               </span>
             </Link>
             <p className="text-secondary-foreground/60 text-sm leading-relaxed">
-              Une expérience culinaire d'exception au cœur de Cotonou. Découvrez notre cuisine gastronomique béninoise.
+              {siteConfig.shortDescription}
             </p>
-            {/* Social Icons */}
-            <motion.div className="flex gap-4" variants={containerVariants}>
-              {[
-                { icon: Facebook, href: '#' },
-                { icon: Instagram, href: '#' },
-                { icon: Twitter, href: '#' },
-              ].map((social, idx) => (
-                <motion.a
-                  key={idx}
-                  href={social.href}
-                  variants={socialVariants}
-                  whileHover="hover"
-                  className="p-2.5 bg-gradient-to-br from-gold/10 to-yellow-300/5 rounded-lg border border-gold/20 hover:border-gold/50 transition-colors"
-                >
-                  <social.icon className="h-5 w-5 text-gold" />
-                </motion.a>
-              ))}
-            </motion.div>
+            {/* Social Icons — affichés uniquement si une URL est configurée */}
+            {socialLinks.length > 0 && (
+              <motion.div className="flex gap-4" variants={containerVariants}>
+                {socialLinks.map((social) => (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    variants={socialVariants}
+                    whileHover="hover"
+                    className="p-2.5 bg-gradient-to-br from-gold/10 to-yellow-300/5 rounded-lg border border-gold/20 hover:border-gold/50 transition-colors"
+                  >
+                    <social.icon className="h-5 w-5 text-gold" />
+                  </motion.a>
+                ))}
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Quick Links */}
@@ -139,10 +148,7 @@ export function Footer() {
               Horaires
             </h3>
             <ul className="space-y-4">
-              {[
-                { day: 'Lun - Ven', time: '12h00 - 14h30 | 19h00 - 22h30' },
-                { day: 'Sam - Dim', time: '12h00 - 15h00 | 19h00 - 23h00' },
-              ].map((schedule, idx) => (
+              {siteConfig.hours.map((schedule, idx) => (
                 <li key={idx}>
                   <motion.div
                     className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-gold/10 transition-colors border border-white/5 hover:border-gold/30"
@@ -174,11 +180,16 @@ export function Footer() {
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
                   <MapPin className="h-4 w-4 mt-0.5 text-gold flex-shrink-0" />
-                  <span className="text-secondary-foreground/60 text-sm">
-                    25 Avenue des Champs-Élysées
+                  <a
+                    href={siteConfig.contact.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm"
+                  >
+                    {siteConfig.contact.addressStreet}
                     <br />
-                    75008 Cotonou, Benin
-                  </span>
+                    {siteConfig.contact.addressCity}, {siteConfig.contact.addressCountry}
+                  </a>
                 </motion.div>
               </li>
 
@@ -190,10 +201,28 @@ export function Footer() {
                 >
                   <Phone className="h-4 w-4 text-gold flex-shrink-0" />
                   <a
-                    href="tel:+22959334483"
+                    href={siteConfig.contact.phoneLink}
                     className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm font-medium"
                   >
-                    +229 59334483
+                    {siteConfig.contact.phoneDisplay}
+                  </a>
+                </motion.div>
+              </li>
+
+              <li>
+                <motion.div
+                  className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-gold/10 transition-colors border border-white/5 hover:border-gold/30"
+                  whileHover={{ y: -4 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                >
+                  <MessageCircle className="h-4 w-4 text-gold flex-shrink-0" />
+                  <a
+                    href={whatsappUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm font-medium"
+                  >
+                    Commander sur WhatsApp
                   </a>
                 </motion.div>
               </li>
@@ -206,43 +235,15 @@ export function Footer() {
                 >
                   <Mail className="h-4 w-4 text-gold flex-shrink-0" />
                   <a
-                    href="mailto:abelbeingar@gmail.com"
+                    href={`mailto:${siteConfig.contact.email}`}
                     className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm font-medium truncate"
                   >
-                    abelbeingar@gmail.com
+                    {siteConfig.contact.email}
                   </a>
                 </motion.div>
               </li>
             </ul>
           </motion.div>
-        </motion.div>
-
-        {/* Divider */}
-        <motion.div
-          className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-8 lg:mb-12"
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease: 'easeOut', delay: 0.4 }}
-        />
-
-        {/* Signature Section */}
-        <motion.div
-          className="mb-8 lg:mb-12 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-gold/5 via-yellow-300/5 to-gold/5 border border-gold/20"
-          variants={itemVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <p className="text-center text-sm sm:text-base text-secondary-foreground/70 mb-3">
-            Conçu et développé avec passion par
-          </p>
-          <p className="text-center font-serif text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent">
-            Dev Spark
-          </p>
-          <p className="text-center text-xs sm:text-sm text-secondary-foreground/50 mt-3">
-            Créateur de solutions web modernes et innovantes
-          </p>
         </motion.div>
 
         {/* Divider */}
@@ -263,9 +264,9 @@ export function Footer() {
           viewport={{ once: true }}
         >
           <motion.p className="text-sm text-secondary-foreground/50" variants={itemVariants}>
-            © {new Date().getFullYear()} Le Gourmet. Tous droits réservés.
+            © {new Date().getFullYear()} {siteConfig.name}. Tous droits réservés.
           </motion.p>
-          <motion.div className="flex gap-6 text-sm" variants={containerVariants}>
+          <motion.div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" variants={containerVariants}>
             {['Mentions légales', 'Politique de confidentialité'].map((item, idx) => {
               const routes = ['/legal', '/privacy'];
               return (
@@ -279,6 +280,9 @@ export function Footer() {
                 </motion.div>
               );
             })}
+            <motion.span className="text-secondary-foreground/40" variants={itemVariants}>
+              Site par <span className="text-gold/80 font-medium">Dev Spark</span>
+            </motion.span>
           </motion.div>
         </motion.div>
       </div>

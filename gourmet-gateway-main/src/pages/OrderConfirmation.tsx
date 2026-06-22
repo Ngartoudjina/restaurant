@@ -1,10 +1,13 @@
 import { Link, useParams } from 'react-router-dom';
-import { CheckCircle, Clock, MapPin, ShoppingBag } from 'lucide-react';
+import { CheckCircle, Clock, MapPin, ShoppingBag, Gift } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { Order } from '@/lib/data';
+import { siteConfig } from '@/config/site';
+
+const formatFCFA = (amount: number) => `${amount.toLocaleString('fr-FR')} FCFA`;
 
 export default function OrderConfirmation() {
   const { orderId } = useParams();
@@ -80,9 +83,9 @@ export default function OrderConfirmation() {
                       {order.type === 'delivery' ? 'Livraison' : order.type === 'takeaway' ? 'Retrait' : 'Sur place'}
                     </p>
                     <p className="font-medium">
-                      {order.type === 'delivery' 
-                        ? order.deliveryAddress?.street 
-                        : '25 Avenue des Champs-Élysées'}
+                      {order.type === 'delivery'
+                        ? order.deliveryAddress?.street
+                        : siteConfig.contact.addressStreet}
                     </p>
                   </div>
                 </CardContent>
@@ -103,14 +106,30 @@ export default function OrderConfirmation() {
                         {item.quantity}x {item.name}
                       </span>
                       <span className="font-medium">
-                        {(item.price * item.quantity).toFixed(2)}€
+                        {formatFCFA(item.price * item.quantity)}
                       </span>
                     </div>
                   ))}
                   <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span className="text-primary">{order.total.toFixed(2)}€</span>
+                    <span className="text-primary">{formatFCFA(order.total)}</span>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Fidélité : incitation au réachat */}
+            <Card className="mb-8 border-gold/30 bg-gold/5">
+              <CardContent className="p-5 flex items-center gap-4 text-left">
+                <div className="w-11 h-11 rounded-full bg-gold/15 flex items-center justify-center flex-shrink-0">
+                  <Gift className="h-5 w-5 text-gold" />
+                </div>
+                <div>
+                  <p className="font-semibold">Un cadeau pour votre prochaine visite</p>
+                  <p className="text-sm text-muted-foreground">
+                    Profitez de <span className="font-bold text-gold">{siteConfig.loyalty.percent}%</span> de réduction avec le code{' '}
+                    <span className="font-bold tracking-wider text-gold">{siteConfig.loyalty.code}</span>
+                  </p>
                 </div>
               </CardContent>
             </Card>

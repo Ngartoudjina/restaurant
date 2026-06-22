@@ -90,25 +90,25 @@ export const mockReviews: Review[] = [
   {
     id: '1',
     userId: 'user1',
-    userName: 'Marie Dupont',
+    userName: 'Aïcha Tossou',
     rating: 5,
-    comment: 'Une expérience culinaire exceptionnelle ! Le filet de bœuf Rossini était divin.',
+    comment: 'Une expérience culinaire exceptionnelle ! Le poulet bicyclette aux épices était divin, exactement comme à la maison mais en plus raffiné.',
     createdAt: Date.now() - 86400000 * 7
   },
   {
     id: '2',
     userId: 'user2',
-    userName: 'Jean-Pierre Martin',
+    userName: 'Koffi Adjahoui',
     rating: 5,
-    comment: 'Service impeccable et plats raffinés. Le homard thermidor est à tomber.',
+    comment: 'Service impeccable et livraison rapide à Cotonou. Le poisson braisé accompagné de son atassi est tout simplement à tomber.',
     createdAt: Date.now() - 86400000 * 14
   },
   {
     id: '3',
     userId: 'user3',
-    userName: 'Sophie Bernard',
+    userName: 'Sandrine Hounkpatin',
     rating: 4,
-    comment: 'Cadre magnifique et cuisine de qualité. Je recommande vivement !',
+    comment: 'Cadre magnifique et cuisine béninoise de grande qualité. La sauce arachide était parfaite. Je recommande vivement !',
     createdAt: Date.now() - 86400000 * 21
   }
 ];

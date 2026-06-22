@@ -209,7 +209,7 @@ export default function Menu() {
   if (isLoading) {
     return (
       <Layout>
-        <section className="py-20 min-h-screen flex items-center justify-center bg-gradient-to-b from-[#2b1b04] to-[#3a2406]">
+        <section className="py-20 min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-slate-950">
           <motion.div
             className="text-center"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -239,7 +239,7 @@ export default function Menu() {
   if (error) {
     return (
       <Layout>
-        <section className="py-20 min-h-screen flex items-center justify-center bg-gradient-to-b from-[#2b1b04] to-[#3a2406]">
+        <section className="py-20 min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-slate-950">
           <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -248,7 +248,7 @@ export default function Menu() {
             <p className="text-destructive mb-6 text-lg">{error}</p>
             <Button
               onClick={fetchData}
-              className="bg-gold hover:bg-gold/90 text-[#2b1b04] font-semibold"
+              className="bg-gold hover:bg-gold/90 text-black font-semibold"
             >
               Réessayer
             </Button>
@@ -262,7 +262,7 @@ export default function Menu() {
     <Layout>
       {/* HERO HEADER */}
         <motion.section
-        className="relative py-20 sm:py-28 lg:py-32 bg-gradient-to-br from-[#2b1b04] via-[#3a2406] to-[#2b1b04] overflow-hidden"
+        className="relative py-20 sm:py-28 lg:py-32 bg-gradient-to-br from-black via-slate-950 to-black overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -298,13 +298,13 @@ export default function Menu() {
           animate="visible"
         >
           <motion.div variants={itemVariants}>
-            <span className="inline-block text-[#D97706] font-semibold text-sm sm:text-base mb-4 bg-gradient-to-r from-[#2b2b2b]/5 to-[#D97706]/8 px-4 py-2 rounded-full border border-[#D97706]/20">
+            <span className="inline-block text-gold font-semibold text-sm sm:text-base mb-4 bg-gradient-to-r from-white/5 to-gold/10 px-4 py-2 rounded-full border border-gold/20">
               ✨ Nos Spécialités
             </span>
           </motion.div>
 
           <motion.h1
-            className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[#D97706] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent"
+            className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent"
             variants={itemVariants}
           >
             Notre Menu Gastronomique
@@ -318,8 +318,8 @@ export default function Menu() {
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-transparent to-[#D97706]/8 border border-[#D97706]/20 text-[#D97706] font-medium text-sm shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-[#D97706]" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-transparent to-gold/10 border border-gold/20 text-gold font-medium text-sm shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-gold" />
               {filteredProducts.length} plat{filteredProducts.length > 1 ? 's' : ''} disponible{filteredProducts.length > 1 ? 's' : ''}
             </div>
           </motion.div>
@@ -328,7 +328,7 @@ export default function Menu() {
 
       {/* FILTERS SECTION */}
       <motion.section
-        className="sticky top-16 z-40 py-6 sm:py-8 bg-gradient-to-b from-[#2b1b04] via-[#3a2406] to-[#2b1b04] backdrop-blur-sm border-b border-[#D97706]/10 shadow-lg"
+        className="sticky top-16 z-40 py-6 sm:py-8 bg-gradient-to-b from-black via-slate-950 to-black backdrop-blur-sm border-b border-gold/10 shadow-lg"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
@@ -348,7 +348,7 @@ export default function Menu() {
                 placeholder="Rechercher un plat..."
                 value={search}
                 onChange={(e) => setSearch(e.currentTarget.value)}
-                className="pl-12 py-3 bg-[#2b1b04]/70 border-[#D97706]/20 hover:border-[#D97706]/40 focus:ring-2 focus:ring-[#D97706]/20 focus:border-[#D97706]/60 transition-colors text-secondary-foreground placeholder:text-secondary-foreground/40"
+                className="pl-12 py-3 bg-white/5 border-gold/20 hover:border-gold/40 focus:ring-2 focus:ring-gold/20 focus:border-gold/60 transition-colors text-secondary-foreground placeholder:text-secondary-foreground/40"
               />
               {search && (
                 <motion.button
@@ -375,7 +375,7 @@ export default function Menu() {
                     setSelectedCategory('all');
                     setSelectedDietary([]);
                   }}
-                  className="px-4 py-2 bg-gradient-to-r from-transparent to-[#D97706]/8 hover:to-[#D97706]/16 border border-[#D97706]/20 rounded-lg text-[#D97706] font-medium flex items-center gap-2 transition-colors whitespace-nowrap"
+                  className="px-4 py-2 bg-gradient-to-r from-transparent to-gold/10 hover:to-gold/20 border border-gold/20 rounded-lg text-gold font-medium flex items-center gap-2 transition-colors whitespace-nowrap"
                 >
                   <X className="h-4 w-4" />
                   Réinitialiser
@@ -411,8 +411,8 @@ export default function Menu() {
                       className={cn(
                         'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300',
                         selectedCategory === cat.id
-                          ? 'bg-gradient-to-r from-[#D97706] to-[#F59E0B] text-slate-900 shadow-2xl shadow-[#D97706]/30'
-                          : 'bg-[#2b1b04]/60 border border-[#D97706]/20 text-secondary-foreground hover:border-[#D97706]/40 hover:bg-[#3a2406]/40'
+                          ? 'bg-gradient-to-r from-gold to-yellow-300 text-slate-900 shadow-2xl shadow-gold/30'
+                          : 'bg-white/5 border border-gold/20 text-secondary-foreground hover:border-gold/40 hover:bg-white/10'
                       )}
                     >
                       {cat.name}
@@ -443,8 +443,8 @@ export default function Menu() {
                         className={cn(
                           'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300',
                           selectedDietary.includes(filter.id)
-                            ? 'bg-gradient-to-r from-[#F59E0B] to-[#FBBF24] text-slate-900 shadow-2xl shadow-[#F59E0B]/30'
-                            : 'bg-[#2b1b04]/60 border border-[#F59E0B]/20 text-secondary-foreground hover:border-[#F59E0B]/40 hover:bg-[#3a2406]/40'
+                            ? 'bg-gradient-to-r from-yellow-300 to-yellow-200 text-slate-900 shadow-2xl shadow-yellow-300/30'
+                            : 'bg-white/5 border border-yellow-300/20 text-secondary-foreground hover:border-yellow-300/40 hover:bg-white/10'
                         )}
                       >
                         {filter.name}
@@ -459,7 +459,7 @@ export default function Menu() {
       </motion.section>
 
       {/* PRODUCTS GRID */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-[#2b1b04] via-[#3a2406]/50 to-[#2b1b04]">
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-black via-slate-950/50 to-black">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {filteredProducts.length === 0 ? (
             <motion.div
@@ -487,7 +487,7 @@ export default function Menu() {
                     setSelectedCategory('all');
                     setSelectedDietary([]);
                   }}
-                  className="bg-gradient-to-r from-[#D97706] to-[#F59E0B] hover:from-[#C16207] text-slate-900 font-semibold shadow-lg px-5 py-3 rounded-lg"
+                  className="bg-gradient-to-r from-gold to-yellow-300 hover:from-yellow-300 text-slate-900 font-semibold shadow-lg px-5 py-3 rounded-lg"
                 >
                   Voir tous les plats
                 </Button>
@@ -511,7 +511,7 @@ export default function Menu() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.4 }}
-                    className="rounded-xl p-1 bg-transparent hover:shadow-2xl hover:shadow-[#D97706]/20 transition-shadow transform-gpu will-change-transform"
+                    className="rounded-xl p-1 bg-transparent hover:shadow-2xl hover:shadow-gold/20 transition-shadow transform-gpu will-change-transform"
                   >
                     <div className="rounded-lg overflow-hidden bg-gradient-to-br from-slate-900/40 to-transparent p-1">
                       <div className="rounded-lg overflow-hidden bg-card">
