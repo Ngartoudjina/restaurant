@@ -11,6 +11,7 @@ import reservationRoutes from './routes/reservation.routes';
 import messageRoutes from './routes/message.routes';
 import { advancedPerformanceLogger, getPerformanceStats, resetPerformanceStats } from './middlewares/advancedPerformance.middleware';
 import { rateLimiter, cleanupRateLimitStore } from './middlewares/rateLimiter.middleware';
+import { verifyToken, isAdmin } from './middlewares/auth.middleware';
 import { initializeRedisCache } from './utils/advancedCache';
 import { cachingMiddleware } from './middlewares/caching.middleware';
 import { requestCoalescingMiddleware } from './middlewares/requestCoalescing.middleware';
@@ -18,6 +19,10 @@ import { requestCoalescingMiddleware } from './middlewares/requestCoalescing.mid
 dotenv.config();
 
 const app = express();
+
+// Derrière le proxy de Render : nécessaire pour que req.ip reflète la vraie IP
+// client (X-Forwarded-For) — utilisé par le rate limiting et la journalisation.
+app.set('trust proxy', 1);
 
 // ========================================
 // INITIALIZATION
@@ -116,9 +121,9 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Performance stats endpoint (admin)
-app.get('/api/stats', getPerformanceStats);
-app.delete('/api/stats', resetPerformanceStats);
+// Performance stats endpoint (admin uniquement)
+app.get('/api/stats', verifyToken, isAdmin, getPerformanceStats);
+app.delete('/api/stats', verifyToken, isAdmin, resetPerformanceStats);
 
 // API Routes
 app.use('/api/products', productRoutes);

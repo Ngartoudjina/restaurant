@@ -108,7 +108,7 @@ export const createProduct = async (req: Request, res: Response) => {
       
       return res.status(500).json({ 
         error: 'Erreur lors de la conversion ou de l\'upload de l\'image',
-        details: uploadError.message
+        details: process.env.NODE_ENV === 'production' ? undefined : uploadError.message
       });
     } finally {
       // ✅ Nettoyage des fichiers temporaires (avec gestion d'erreur silencieuse)
@@ -156,7 +156,7 @@ export const createProduct = async (req: Request, res: Response) => {
     console.error('❌ Erreur création produit:', error);
     res.status(500).json({
       error: 'Erreur lors de la création du produit',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -223,7 +223,7 @@ export const getProducts = async (req: Request, res: Response) => {
     console.error('❌ Erreur récupération produits:', error);
     res.status(500).json({
       error: 'Erreur lors de la récupération des produits',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -274,7 +274,7 @@ export const getProductById = async (req: Request, res: Response) => {
     console.error('❌ Erreur récupération produit:', error);
     res.status(500).json({ 
       error: 'Erreur lors de la récupération du produit',
-      details: error.message 
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message 
     });
   }
 };
@@ -345,7 +345,7 @@ if (req.file) {
     
     return res.status(500).json({
       error: 'Erreur lors de la conversion ou de l\'upload de l\'image',
-      details: uploadError.message
+      details: process.env.NODE_ENV === 'production' ? undefined : uploadError.message
     });
   } finally {
     // ✅ Nettoyage des fichiers temporaires
@@ -398,7 +398,7 @@ if (req.file) {
     console.error('❌ Erreur mise à jour produit:', error);
     res.status(500).json({ 
       error: 'Erreur lors de la mise à jour du produit',
-      details: error.message 
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message 
     });
   }
 };
@@ -444,7 +444,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
     console.error('❌ Erreur suppression produit:', error);
     res.status(500).json({ 
       error: 'Erreur lors de la suppression du produit',
-      details: error.message 
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message 
     });
   }
 };
@@ -516,7 +516,7 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
     console.error('❌ Erreur récupération par catégorie:', error);
     res.status(500).json({ 
       error: 'Erreur lors de la récupération des produits',
-      details: error.message 
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message 
     });
   }
 };
@@ -576,7 +576,7 @@ export const getPopularProducts = async (_: Request, res: Response) => {
     console.error('❌ Erreur produits populaires:', error);
     res.status(500).json({ 
       error: 'Erreur lors de la récupération des produits populaires',
-      details: error.message 
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message 
     });
   }
 };

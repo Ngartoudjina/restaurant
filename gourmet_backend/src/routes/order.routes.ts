@@ -11,6 +11,7 @@ import {
   getOrderStats
 } from '../controllers/order.controller';
 import { verifyToken, isAdmin } from '../middlewares/auth.middleware';
+import { rateLimiter } from '../middlewares/rateLimiter.middleware';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.get('/stats', verifyToken, isAdmin, getOrderStats);
 // Routes utilisateur
 router.get('/my-orders', verifyToken, getUserOrders);
 router.get('/:id', verifyToken, getOrderById);
-router.post('/', verifyToken, createOrder);
+router.post('/', rateLimiter(20, 60000), verifyToken, createOrder);
 
 // Routes admin uniquement
 router.put('/:id/status', verifyToken, isAdmin, updateOrderStatus);

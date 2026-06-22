@@ -40,7 +40,7 @@ const checkoutSchema = z.object({
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function Checkout() {
-  const { items, total, discount, clearCart } = useCart();
+  const { items, total, discount, promoCode, clearCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -95,8 +95,9 @@ export default function Checkout() {
           quantity: item.quantity,
           image: item.image,
         })),
-        total: finalTotal,
+        total: finalTotal, // indicatif — le serveur recalcule le total faisant foi
         type: orderType,
+        ...(promoCode && { promoCode }),
         ...(orderType === 'delivery' && {
           deliveryAddress: {
             street: data.address || '',

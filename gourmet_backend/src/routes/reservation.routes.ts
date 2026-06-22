@@ -12,12 +12,13 @@ import {
   checkAvailability
 } from '../controllers/reservation.controller';
 import { verifyToken, isAdmin } from '../middlewares/auth.middleware';
+import { rateLimiter } from '../middlewares/rateLimiter.middleware';
 
 const router = Router();
 
-// Routes publiques
-router.post('/', createReservation);
-router.get('/check-availability', checkAvailability);
+// Routes publiques (anti-spam)
+router.post('/', rateLimiter(8, 60000), createReservation);
+router.get('/check-availability', rateLimiter(30, 60000), checkAvailability);
 
 // Routes admin
 router.get('/', verifyToken, isAdmin, getAllReservations);

@@ -49,7 +49,9 @@ export const createMessage = async (req: Request, res: Response) => {
       message: 'Message envoyé avec succès'
     });
   } catch (error: unknown) {
-    const details = error instanceof Error ? error.message : String(error);
+    const details = process.env.NODE_ENV === 'production'
+      ? undefined
+      : (error instanceof Error ? error.message : String(error));
     console.error('Erreur création message:', error);
     res.status(500).json({ error: 'Erreur lors de l\'envoi du message', details });
   }
@@ -98,7 +100,9 @@ export const getMessages = async (req: Request, res: Response) => {
       data: messages
     });
   } catch (error: unknown) {
-    const details = error instanceof Error ? error.message : String(error);
+    const details = process.env.NODE_ENV === 'production'
+      ? undefined
+      : (error instanceof Error ? error.message : String(error));
     console.error('Erreur récupération messages:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération des messages', details });
   }
@@ -114,7 +118,9 @@ export const getMessageById = async (req: Request, res: Response) => {
 
     res.status(200).json({ success: true, data: { id: doc.id, ...doc.data() } });
   } catch (error: unknown) {
-    const details = error instanceof Error ? error.message : String(error);
+    const details = process.env.NODE_ENV === 'production'
+      ? undefined
+      : (error instanceof Error ? error.message : String(error));
     console.error('Erreur getMessageById:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération du message', details });
   }
@@ -131,7 +137,9 @@ export const markAsRead = async (req: Request, res: Response) => {
     await ref.update({ read: true, readAt: FieldValue.serverTimestamp() });
     res.status(200).json({ success: true, message: 'Message marqué comme lu' });
   } catch (error: unknown) {
-    const details = error instanceof Error ? error.message : String(error);
+    const details = process.env.NODE_ENV === 'production'
+      ? undefined
+      : (error instanceof Error ? error.message : String(error));
     console.error('Erreur markAsRead:', error);
     res.status(500).json({ error: 'Erreur lors de la mise à jour du message', details });
   }
@@ -148,7 +156,9 @@ export const deleteMessage = async (req: Request, res: Response) => {
     await ref.delete();
     res.status(200).json({ success: true, message: 'Message supprimé' });
   } catch (error: unknown) {
-    const details = error instanceof Error ? error.message : String(error);
+    const details = process.env.NODE_ENV === 'production'
+      ? undefined
+      : (error instanceof Error ? error.message : String(error));
     console.error('Erreur deleteMessage:', error);
     res.status(500).json({ error: 'Erreur lors de la suppression du message', details });
   }

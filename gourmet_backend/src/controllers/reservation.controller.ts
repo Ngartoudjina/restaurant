@@ -42,7 +42,7 @@ export const getAllReservations = async (_: Request, res: Response) => {
     console.error('Erreur récupération réservations:', error);
     res.status(500).json({
       error: 'Erreur lors de la récupération des réservations',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -79,7 +79,7 @@ export const getReservationById = async (req: Request, res: Response) => {
     console.error('Erreur récupération réservation:', error);
     res.status(500).json({
       error: 'Erreur lors de la récupération de la réservation',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -113,7 +113,7 @@ export const getUserReservations = async (req: Request, res: Response) => {
     console.error('Erreur récupération réservations utilisateur:', error);
     res.status(500).json({
       error: 'Erreur lors de la récupération des réservations',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -210,7 +210,7 @@ export const createReservation = async (req: Request, res: Response) => {
     console.error('Erreur création réservation:', error);
     res.status(500).json({
       error: 'Erreur lors de la création de la réservation',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -248,7 +248,7 @@ export const updateReservationStatus = async (req: Request, res: Response) => {
     console.error('Erreur mise à jour statut réservation:', error);
     res.status(500).json({
       error: 'Erreur lors de la mise à jour du statut',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -288,7 +288,7 @@ export const cancelReservation = async (req: Request, res: Response) => {
     console.error('Erreur annulation réservation:', error);
     res.status(500).json({
       error: 'Erreur lors de l\'annulation de la réservation',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -314,7 +314,7 @@ export const deleteReservation = async (req: Request, res: Response) => {
     console.error('Erreur suppression réservation:', error);
     res.status(500).json({
       error: 'Erreur lors de la suppression de la réservation',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
@@ -358,7 +358,7 @@ export const checkAvailability = async (req: Request, res: Response) => {
     console.error('Erreur vérification disponibilité:', error);
     res.status(500).json({
       error: 'Erreur lors de la vérification de disponibilité',
-      details: error.message
+      details: process.env.NODE_ENV === 'production' ? undefined : error.message
     });
   }
 };
