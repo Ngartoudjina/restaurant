@@ -126,6 +126,8 @@ export default function Index() {
           <img
             src={heroImage}
             alt="Restaurant interior"
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover"
           />
           <motion.div

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/CartContext';
 import { Product } from '@/pages/Menu';
+import { cldImg } from '@/lib/image';
 
 interface ProductModalProps {
   product: Product | null;
@@ -56,8 +57,9 @@ export function ProductModal({ product, open, onClose }: ProductModalProps) {
           {/* Image */}
           <div className="relative h-80 md:h-full rounded-lg overflow-hidden">
             <img
-              src={product.image}
+              src={cldImg(product.image, { width: 800 })}
               alt={product.name}
+              decoding="async"
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.currentTarget.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800';

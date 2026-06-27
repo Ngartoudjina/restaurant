@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/CartContext';
 import { Product } from '@/pages/Menu';
+import { cldImg, cldSrcSet } from '@/lib/image';
 
 interface ProductCardProps {
   product: Product;
@@ -59,12 +60,19 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
 
       {/* Image Container */}
       <div className="relative h-56 overflow-hidden bg-gradient-to-br from-gold/5 to-gold/10">
-        {/* Image */}
+        {/* Image (optimisée Cloudinary : format + qualité + largeur adaptés) */}
         <img
-          src={product.image}
+          src={cldImg(product.image, { width: 600, height: 450 })}
+          srcSet={cldSrcSet(product.image, 400)}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 350px"
           alt={product.name}
+          loading="lazy"
+          decoding="async"
+          width={600}
+          height={450}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           onError={(e) => {
+            e.currentTarget.srcset = '';
             e.currentTarget.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80';
           }}
         />
