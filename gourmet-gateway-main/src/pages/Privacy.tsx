@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { siteConfig } from '@/config/site';
 
@@ -61,8 +62,9 @@ export default function Privacy() {
           <h2>Vos droits</h2>
           <p>
             Vous pouvez demander l'accès, la rectification ou la suppression de vos données, ainsi
-            que vous désinscrire de la newsletter, en écrivant à{' '}
-            <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>.
+            que vous désinscrire de la newsletter, en nous contactant au{' '}
+            {siteConfig.contact.phoneDisplay} ou via notre{' '}
+            <Link to="/contact">page de contact</Link>.
           </p>
 
           <h2>Cookies & stockage local</h2>

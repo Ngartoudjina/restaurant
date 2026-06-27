@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { siteConfig } from '@/config/site';
 
@@ -21,8 +22,7 @@ export default function Legal() {
           <ul>
             <li>Téléphone : {siteConfig.contact.phoneDisplay}</li>
             <li>
-              Email :{' '}
-              <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>
+              Contact : via notre <Link to="/contact">page de contact</Link>
             </li>
           </ul>
 
@@ -30,7 +30,7 @@ export default function Legal() {
           <p>
             Le site et son API sont hébergés sur des infrastructures cloud (Render, Firebase de
             Google, Cloudinary). Les coordonnées complètes des hébergeurs sont disponibles sur
-            demande à l'adresse {siteConfig.contact.email}.
+            demande via notre page de contact.
           </p>
 
           <h2>Propriété intellectuelle</h2>
@@ -50,8 +50,9 @@ export default function Legal() {
 
           <h2>Contact</h2>
           <p>
-            Pour toute question relative aux présentes mentions légales, vous pouvez nous écrire à{' '}
-            <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>.
+            Pour toute question relative aux présentes mentions légales, vous pouvez nous
+            contacter au {siteConfig.contact.phoneDisplay} ou via notre{' '}
+            <Link to="/contact">page de contact</Link>.
           </p>
 
           <p className="text-sm text-muted-foreground">

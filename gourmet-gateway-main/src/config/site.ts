@@ -38,8 +38,6 @@ export const siteConfig = {
     whatsapp: '22997621016',
     whatsappDefaultMessage:
       'Bonjour Le Gourmet 👋, je souhaite passer une commande / réserver une table.',
-
-    email: 'abelbeingar@gmail.com',
   },
 
   // ── Horaires (affichage + schema.org) ──────────────────────────

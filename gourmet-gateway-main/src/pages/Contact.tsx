@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, MessageSquare, Sparkles, Star } from 'lucide-react';
+import { MapPin, Phone, MessageCircle, Clock, Send, MessageSquare, Sparkles, Star } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
+import { siteConfig, whatsappUrl } from '@/config/site';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -258,8 +259,8 @@ export default function Contact() {
                         Adresse
                       </h3>
                       <p className="text-amber-800/70 text-sm leading-relaxed">
-                        25 Avenue des Champs-Élysées<br />
-                        75008 Cotonou, Bénin
+                        {siteConfig.contact.addressStreet}<br />
+                        {siteConfig.contact.addressCity}, {siteConfig.contact.addressCountry}
                       </p>
                     </div>
                   </div>
@@ -287,11 +288,11 @@ export default function Contact() {
                         Téléphone
                       </h3>
                       <motion.a
-                        href="tel:+33142659800"
+                        href={siteConfig.contact.phoneLink}
                         className="text-amber-700 hover:text-amber-900 transition-colors text-sm font-semibold inline-flex items-center gap-2"
                         whileHover={{ x: 5 }}
                       >
-                        <span>+229 1 42 65 98 00</span>
+                        <span>{siteConfig.contact.phoneDisplay}</span>
                         <motion.span
                           animate={{ x: [0, 3, 0] }}
                           transition={{ duration: 1.5, repeat: Infinity }}
@@ -304,7 +305,7 @@ export default function Contact() {
                 </div>
               </motion.div>
 
-              {/* Email */}
+              {/* WhatsApp */}
               <motion.div variants={cardVariants} whileHover="hover">
                 <div className="bg-white border-2 border-amber-200/50 rounded-2xl p-6 h-full hover:border-amber-400 hover:shadow-2xl hover:shadow-amber-200/40 transition-all duration-400 group">
                   <div className="flex items-start gap-4">
@@ -313,23 +314,25 @@ export default function Contact() {
                       style={{
                         background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                       }}
-                      whileHover={{ 
+                      whileHover={{
                         y: -8
                       }}
                       transition={{ duration: 0.3 }}
                     >
-                      <Mail className="h-6 w-6 text-white" />
+                      <MessageCircle className="h-6 w-6 text-white" />
                     </motion.div>
                     <div>
                       <h3 className="font-serif font-bold text-amber-900 mb-2 text-lg group-hover:text-amber-700 transition-colors">
-                        Email
+                        WhatsApp
                       </h3>
                       <motion.a
-                        href="mailto:abelbeingar@gmail.com"
-                        className="text-amber-700 hover:text-amber-900 transition-colors text-sm font-semibold break-all"
+                        href={whatsappUrl()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-amber-700 hover:text-amber-900 transition-colors text-sm font-semibold"
                         whileHover={{ scale: 1.02 }}
                       >
-                        abelbeingar@gmail.com
+                        Écrivez-nous sur WhatsApp
                       </motion.a>
                     </div>
                   </div>
