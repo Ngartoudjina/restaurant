@@ -31,11 +31,11 @@ export const siteConfig = {
     // TODO: lien Google Maps réel
     mapUrl: 'https://maps.app.goo.gl/2QYrYXTmzjqNRbCv8',
 
-    phoneDisplay: '+229 59 33 44 83',
-    phoneLink: 'tel:+22959334483',
+    phoneDisplay: '+229 97 62 10 16',
+    phoneLink: 'tel:+22997621016',
 
     // Numéro WhatsApp au format international sans « + » ni espaces
-    whatsapp: '22959334483',
+    whatsapp: '22997621016',
     whatsappDefaultMessage:
       'Bonjour Le Gourmet 👋, je souhaite passer une commande / réserver une table.',
 

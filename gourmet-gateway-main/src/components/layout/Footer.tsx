@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChefHat, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, MessageCircle, ArrowUpRight } from 'lucide-react';
+import { ChefHat, MapPin, Phone, Clock, Facebook, Instagram, Twitter, MessageCircle, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { siteConfig, whatsappUrl } from '@/config/site';
 
@@ -226,22 +226,6 @@ export function Footer() {
                   </a>
                 </motion.div>
               </li>
-
-              <li>
-                <motion.div
-                  className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-gold/10 transition-colors border border-white/5 hover:border-gold/30"
-                  whileHover={{ y: -4 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                >
-                  <Mail className="h-4 w-4 text-gold flex-shrink-0" />
-                  <a
-                    href={`mailto:${siteConfig.contact.email}`}
-                    className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm font-medium truncate"
-                  >
-                    {siteConfig.contact.email}
-                  </a>
-                </motion.div>
-              </li>
             </ul>
           </motion.div>
         </motion.div>
@@ -281,7 +265,15 @@ export function Footer() {
               );
             })}
             <motion.span className="text-secondary-foreground/40" variants={itemVariants}>
-              Site par <span className="text-gold/80 font-medium">Dev Spark</span>
+              Site par{' '}
+              <a
+                href="https://abelbeingar.me"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold/80 font-medium hover:text-gold transition-colors"
+              >
+                Abel Beingar
+              </a>
             </motion.span>
           </motion.div>
         </motion.div>
