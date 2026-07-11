@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Star, Award, Leaf, Clock, ChevronRight, Loader2 } from 'lucide-react';
+import { Star, ChevronRight, Loader2 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/menu/ProductCard';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +11,7 @@ import { mockReviews } from '@/lib/data';
 import { siteConfig, whatsappUrl } from '@/config/site';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { HeroCinematic } from '@/components/home/HeroCinematic';
+import { PhilosophySection } from '@/components/home/PhilosophySection';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -122,69 +123,8 @@ export default function Index() {
       {/* Hero cinématique — DA « Braise & Bronze », acte I (GSAP) */}
       <HeroCinematic />
 
-      {/* Features Section - Modern Cards */}
-      <section className="py-24 bg-gradient-to-b from-black to-slate-950 relative overflow-hidden">
-        {/* Background Decorations */}
-        <motion.div
-          className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl"
-          animate={{ x: [0, 100, 0], y: [0, 50, 0] }}
-          transition={{ duration: 15, repeat: Infinity }}
-        />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div 
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">
-              Notre <span className="text-gold">Philosophie</span>
-            </h2>
-            <p className="text-white/70 max-w-2xl mx-auto text-lg">
-              Découvrez ce qui fait de Le Gourmet une destination culinaire unique
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { icon: Award, title: 'Excellence', desc: 'Des ingrédients de première qualité, sélectionnés avec soin auprès de producteurs locaux.' },
-              { icon: Leaf, title: 'Fraîcheur', desc: 'Des produits frais livrés quotidiennement pour garantir une qualité optimale.' },
-              { icon: Clock, title: 'Service', desc: 'Une équipe dévouée pour vous offrir une expérience mémorable à chaque visite.' }
-            ].map((feature, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.2, duration: 0.8 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10 }}
-                className="group"
-              >
-                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20 hover:border-gold/50 transition-all duration-300">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-gold/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  />
-                  
-                  <div className="relative z-10">
-                    <motion.div 
-                      className="w-16 h-16 rounded-xl bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center mb-4 group-hover:from-gold/50 group-hover:to-gold/20 transition-all duration-300"
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                    >
-                      <feature.icon className="h-8 w-8 text-gold" />
-                    </motion.div>
-                    <h3 className="font-serif text-2xl font-bold text-white mb-3">{feature.title}</h3>
-                    <p className="text-white/70 leading-relaxed">
-                      {feature.desc}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Acte II — Philosophie, bascule vers « le papier » (GSAP) */}
+      <PhilosophySection />
 
       {/* Popular Dishes - Modern Grid */}
       <section className="py-24 bg-gradient-to-b from-slate-950 to-black relative overflow-hidden">

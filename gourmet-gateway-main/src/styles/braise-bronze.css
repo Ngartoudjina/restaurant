@@ -17,6 +17,16 @@
   --bb-ember: #d2652f;
   --bb-hairline: rgba(214, 178, 122, 0.18);
   --bb-display: "Fraunces", "Playfair Display", Georgia, serif;
+  --bb-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+
+  /* « Le papier » — thème clair des actes II/IV (le menu imprimé) */
+  --bb-paper: #e9ddc7;
+  --bb-paper-2: #f1e7d3;
+  --bb-ink: #211a12;
+  --bb-ink-soft: rgba(33, 26, 18, 0.7);
+  --bb-ink-mute: rgba(33, 26, 18, 0.46);
+  --bb-bronze-ink: #8a6631;
+  --bb-hairline-ink: rgba(138, 102, 49, 0.28);
 }
 
 /* ---------------- Boutons (design system v2) ---------------- */
@@ -238,5 +248,165 @@
   }
   .hero-cine__cue {
     display: none;
+  }
+}
+
+/* ---------------- Acte II — Philosophie (« le papier ») ---------------- */
+.philo {
+  background: var(--bb-paper);
+  color: var(--bb-ink);
+  padding: clamp(5rem, 13vh, 9.5rem) 0;
+  overflow: hidden;
+}
+.philo__inner {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 7vw, 7rem);
+  display: grid;
+  gap: 3.5rem;
+}
+@media (min-width: 960px) {
+  .philo__inner {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: center;
+  }
+}
+.philo__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--bb-bronze-ink);
+  margin: 0 0 1.5rem;
+}
+.philo__eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--bb-bronze-ink);
+  opacity: 0.6;
+}
+.philo__title {
+  font-family: var(--bb-display);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+.philo__title em {
+  font-style: italic;
+  color: var(--bb-bronze-ink);
+}
+.philo__prose {
+  margin: 1.6rem 0 0;
+  max-width: 52ch;
+  color: var(--bb-ink-soft);
+  line-height: 1.7;
+}
+.philo__pillars {
+  margin-top: 2.6rem;
+  display: grid;
+}
+.philo__pillar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  column-gap: 1.2rem;
+  padding: 1.35rem 0 1.45rem;
+}
+.philo__rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--bb-hairline-ink);
+  transform-origin: left center;
+}
+.philo__pillar .n {
+  font-family: var(--bb-mono);
+  font-size: 0.74rem;
+  color: var(--bb-bronze-ink);
+  letter-spacing: 0.08em;
+  padding-top: 0.35rem;
+}
+.philo__pillar h3 {
+  font-family: var(--bb-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+}
+.philo__pillar p {
+  grid-column: 2;
+  margin: 0.35rem 0 0;
+  color: var(--bb-ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 46ch;
+}
+
+/* Colonne images — deux photos décalées qui cassent la grille */
+.philo__media {
+  position: relative;
+  min-height: 520px;
+}
+.philo__ph {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 4px;
+  clip-path: inset(0% 0 0 0);
+}
+.philo__ph img {
+  display: block;
+  width: 100%;
+  height: 116%;
+  margin-top: -8%;
+  object-fit: cover;
+}
+.philo__ph--a {
+  top: 0;
+  right: -6%;
+  width: 74%;
+  aspect-ratio: 3 / 4;
+}
+.philo__ph--b {
+  bottom: 0;
+  left: 0;
+  width: 52%;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 34px 70px -34px rgba(33, 26, 18, 0.45);
+}
+.philo__ph figcaption {
+  position: absolute;
+  left: 0.9rem;
+  bottom: 0.75rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(236, 227, 210, 0.85);
+}
+@media (max-width: 959px) {
+  .philo__media {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .philo__ph {
+    position: relative;
+    inset: auto;
+    width: auto;
+  }
+  .philo__ph--a,
+  .philo__ph--b {
+    aspect-ratio: 3 / 4;
+  }
+  .philo__ph--b {
+    transform: translateY(1.4rem);
   }
 }
