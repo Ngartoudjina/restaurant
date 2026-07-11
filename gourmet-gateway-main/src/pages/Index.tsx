@@ -2,15 +2,15 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Star, Award, Leaf, Clock, ChevronRight, Loader2, Sparkles, ArrowRight } from 'lucide-react';
+import { Star, Award, Leaf, Clock, ChevronRight, Loader2 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/menu/ProductCard';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
-import heroImage from '@/assets/hero-restaurant.jpg';
 import { mockReviews } from '@/lib/data';
 import { siteConfig, whatsappUrl } from '@/config/site';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
+import { HeroCinematic } from '@/components/home/HeroCinematic';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -119,129 +119,8 @@ export default function Index() {
 
   return (
     <Layout>
-      {/* Hero Section - Ultra Modern */}
-      <section className="relative h-[100vh] min-h-[700px] flex items-center justify-center overflow-hidden">
-        {/* Background Image avec Overlay */}
-        <div className="absolute inset-0">
-          <img
-            src={heroImage}
-            alt="Restaurant interior"
-            fetchPriority="high"
-            decoding="async"
-            className="w-full h-full object-cover"
-          />
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-          />
-          
-          {/* Animated Background Elements */}
-          <motion.div
-            className="absolute top-20 right-20 w-72 h-72 bg-gold/10 rounded-full blur-3xl"
-            animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
-            transition={{ duration: 8, repeat: Infinity }}
-          />
-          <motion.div
-            className="absolute bottom-40 left-20 w-96 h-96 bg-gold/5 rounded-full blur-3xl"
-            animate={{ x: [0, -30, 0], y: [0, -40, 0] }}
-            transition={{ duration: 10, repeat: Infinity }}
-          />
-        </div>
-
-        {/* Content */}
-        <motion.div 
-          className="relative z-10 container mx-auto px-4 text-center"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 bg-gold/10 px-4 py-2 rounded-full mb-6 border border-gold/30 backdrop-blur-sm"
-          >
-            <Sparkles className="h-4 w-4 text-gold" />
-            <span className="text-gold font-medium tracking-wider uppercase text-sm">
-              Gastronomie béninoise · Cotonou
-            </span>
-          </motion.div>
-
-          <motion.h1 
-            variants={itemVariants}
-            className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
-          >
-            <span className="bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent">
-              Le Gourmet
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-8 leading-relaxed"
-          >
-            Le meilleur de la <span className="text-gold font-semibold">cuisine béninoise</span>, préparé avec des produits frais et locaux. Commandez en ligne avec <span className="text-gold font-semibold">livraison rapide à Cotonou</span>, ou réservez votre table.
-          </motion.p>
-
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Link to="/menu">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button size="lg" className="bg-gradient-to-r from-gold to-yellow-300 text-black hover:from-yellow-300 hover:to-gold font-semibold text-base px-8 h-12 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Commander en ligne
-                </Button>
-              </motion.div>
-            </Link>
-            <Link to="/reservation">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  size="lg"
-                  className="border-2 border-white/50 text-white hover:bg-white/10 hover:border-gold px-8 h-12 font-semibold text-base backdrop-blur-sm transition-all duration-300"
-                >
-                  Réserver une table
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </motion.div>
-            </Link>
-          </motion.div>
-
-          {/* Offre de bienvenue mise en avant dès le hero */}
-          <motion.p
-            variants={itemVariants}
-            className="mt-6 inline-flex items-center gap-2 text-sm text-white/80"
-          >
-            <span>🎁</span>
-            <span>
-              <span className="text-gold font-semibold">{siteConfig.promo.percent}%</span> sur votre 1ʳᵉ commande avec le code{' '}
-              <span className="text-gold font-bold tracking-wider">{siteConfig.promo.code}</span>
-            </span>
-          </motion.p>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 12, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="w-6 h-10 rounded-full border-2 border-gold/50 flex justify-center pt-2">
-            <motion.div 
-              className="w-1 h-2 bg-gold rounded-full"
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-        </motion.div>
-      </section>
+      {/* Hero cinématique — DA « Braise & Bronze », acte I (GSAP) */}
+      <HeroCinematic />
 
       {/* Features Section - Modern Cards */}
       <section className="py-24 bg-gradient-to-b from-black to-slate-950 relative overflow-hidden">
