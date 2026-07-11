@@ -2,9 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Star, ChevronRight, Loader2 } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
-import { ProductCard } from '@/components/menu/ProductCard';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { mockReviews } from '@/lib/data';
@@ -12,6 +11,7 @@ import { siteConfig, whatsappUrl } from '@/config/site';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { HeroCinematic } from '@/components/home/HeroCinematic';
 import { PhilosophySection } from '@/components/home/PhilosophySection';
+import { SignatureGallery } from '@/components/home/SignatureGallery';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -126,85 +126,8 @@ export default function Index() {
       {/* Acte II — Philosophie, bascule vers « le papier » (GSAP) */}
       <PhilosophySection />
 
-      {/* Popular Dishes - Modern Grid */}
-      <section className="py-24 bg-gradient-to-b from-slate-950 to-black relative overflow-hidden">
-        <motion.div
-          className="absolute bottom-0 left-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl"
-          animate={{ x: [0, -50, 0], y: [0, 50, 0] }}
-          transition={{ duration: 12, repeat: Infinity }}
-        />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div 
-            className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <div>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-2">
-                Nos Plats <span className="text-gold">Populaires</span>
-              </h2>
-              <p className="text-white/70 text-lg">
-                Les favoris de nos clients
-              </p>
-            </div>
-            <Link to="/menu">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button variant="outline" className="group border-gold/50 text-gold hover:bg-gold hover:text-black font-semibold">
-                  Voir tout le menu
-                  <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </motion.div>
-            </Link>
-          </motion.div>
-
-          {loadingProducts ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="text-center">
-                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-gold" />
-                <p className="text-white/70">
-                  Chargement des plats populaires...
-                </p>
-              </div>
-            </div>
-          ) : popularProducts.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-white/70 mb-4 text-lg">
-                Aucun plat populaire pour le moment
-              </p>
-              <Link to="/menu">
-                <Button className="bg-gold text-black hover:bg-gold-dark">Découvrir notre menu</Button>
-              </Link>
-            </div>
-          ) : (
-            <motion.div 
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              {popularProducts.map((product, idx) => (
-                <motion.div
-                  key={product.id}
-                  variants={itemVariants}
-                  whileHover={{ y: -8 }}
-                >
-                  <ProductCard 
-                    product={product}
-                    onViewDetails={() => {}} 
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </div>
-      </section>
+      {/* Acte III — Signatures : plat héros + galerie horizontale pinnée (GSAP) */}
+      <SignatureGallery products={popularProducts} loading={loadingProducts} />
 
       {/* Testimonials - Modern Design */}
       <section className="py-24 bg-black relative overflow-hidden">
