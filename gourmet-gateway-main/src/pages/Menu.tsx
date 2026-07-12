@@ -1,65 +1,31 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Search, Loader2, X } from 'lucide-react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/menu/ProductCard';
 import { ProductModal } from '@/components/menu/ProductModal';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
+import '@/styles/braise-bronze.css';
+
+gsap.registerPlugin(useGSAP);
 
 // URL de votre backend
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
-  },
-};
-
-const filterButtonVariants = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.9 },
-};
-
-const productGridVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.2,
-    },
-  },
-};
 
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
-  image: string; // Changé de imageUrl à image (comme dans votre backend)
-  category: string; // Changé de categoryId à category
+  image: string;
+  category: string;
   dietary: string[];
   available: boolean;
+  popular?: boolean;
+  allergens?: string[];
+  ingredients?: string[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -78,21 +44,22 @@ export default function Menu() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [dietaryFilters, setDietaryFilters] = useState<DietaryFilter[]>([]);
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDietary, setSelectedDietary] = useState<string[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  
+
   const { toast } = useToast();
+  const root = useRef<HTMLDivElement>(null);
 
   /* =======================
      FETCH DATA FROM BACKEND
      ======================= */
-  
+
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -101,7 +68,7 @@ export default function Menu() {
       // Récupérer les produits depuis le backend
       const productsResponse = await axios.get(`${API_URL}/api/products`);
       const productsData = productsResponse.data.data || productsResponse.data;
-      
+
       // Filtrer uniquement les produits disponibles
       const availableProducts = productsData.filter((p: Product) => p.available !== false);
       setProducts(availableProducts);
@@ -133,9 +100,9 @@ export default function Menu() {
       const errorMessage = axios.isAxiosError(err)
         ? err.response?.data?.message || 'Impossible de charger les produits'
         : 'Une erreur est survenue';
-      
+
       setError(errorMessage);
-      
+
       toast({
         title: 'Erreur',
         description: 'Impossible de charger les produits. Vérifiez que le serveur est lancé.',
@@ -203,35 +170,67 @@ export default function Menu() {
     );
   };
 
+  const resetFilters = () => {
+    setSearch('');
+    setSelectedCategory('all');
+    setSelectedDietary([]);
+  };
+
+  const hasActiveFilters = Boolean(search) || selectedCategory !== 'all' || selectedDietary.length > 0;
+
+  /* =======================
+     ANIMATIONS (GSAP)
+     ======================= */
+
+  // Entrée de la page : titre masqué + filtres
+  useGSAP(
+    () => {
+      if (isLoading || error) return;
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap
+          .timeline({ defaults: { ease: 'expo.out' } })
+          .from('.js-m-line > span', { yPercent: 110, duration: 1, stagger: 0.1 })
+          .from(
+            '.js-m-fade',
+            { y: 16, opacity: 0, duration: 0.7, ease: 'power2.out', stagger: 0.08 },
+            '-=0.6'
+          );
+      });
+    },
+    { scope: root, dependencies: [isLoading, error] }
+  );
+
+  // Cartes : cascade à chaque changement de filtre
+  useGSAP(
+    () => {
+      if (isLoading || error) return;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return;
+      gsap.fromTo(
+        '.js-m-card',
+        { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out', stagger: { each: 0.045 }, overwrite: true }
+      );
+    },
+    { scope: root, dependencies: [isLoading, error, selectedCategory, selectedDietary, search, products.length] }
+  );
+
   /* =======================
      LOADING & ERROR STATES
      ======================= */
   if (isLoading) {
     return (
       <Layout>
-        <section className="py-20 min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-slate-950">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              className="inline-block"
-            >
-              <Loader2 className="h-16 w-16 text-gold mb-6" />
-            </motion.div>
-            <motion.p
-              className="text-secondary-foreground/80 text-lg font-medium"
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              Préparation du menu...
-            </motion.p>
-          </motion.div>
-        </section>
+        <div className="mstate" role="status">
+          <div>
+            <Loader2
+              className="h-12 w-12 animate-spin"
+              style={{ color: 'var(--bb-bronze)', margin: '0 auto 1rem' }}
+            />
+            <p>Préparation de la carte…</p>
+          </div>
+        </div>
       </Layout>
     );
   }
@@ -239,302 +238,140 @@ export default function Menu() {
   if (error) {
     return (
       <Layout>
-        <section className="py-20 min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-slate-950">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <p className="text-destructive mb-6 text-lg">{error}</p>
-            <Button
-              onClick={fetchData}
-              className="bg-gold hover:bg-gold/90 text-black font-semibold"
-            >
+        <div className="mstate">
+          <div>
+            <p style={{ marginBottom: '1.4rem' }}>{error}</p>
+            <button onClick={fetchData} className="bb-btn bb-btn--bronze">
               Réessayer
-            </Button>
-          </motion.div>
-        </section>
+            </button>
+          </div>
+        </div>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      {/* HERO HEADER */}
-        <motion.section
-        className="relative py-20 sm:py-28 lg:py-32 bg-gradient-to-br from-black via-slate-950 to-black overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        {/* Animated Background Elements */}
-        <motion.div
-          className="absolute inset-0 opacity-40"
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%'],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 20% 50%, rgba(217, 119, 6, 0.15) 0%, transparent 50%)',
-          }}
-        />
-        <motion.div
-          className="absolute inset-0 opacity-30"
-          animate={{
-            backgroundPosition: ['100% 100%', '0% 0%'],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 80% 80%, rgba(253, 185, 19, 0.1) 0%, transparent 50%)',
-          }}
-        />
+      <div ref={root}>
+        {/* En-tête de la carte */}
+        <section className="mhero" aria-labelledby="menu-title">
+          <div className="mhero__inner">
+            <p className="js-m-fade philo__eyebrow" style={{ color: 'var(--bb-bronze)' }}>
+              La carte
+            </p>
+            <h1 id="menu-title" className="mhero__title">
+              <span className="js-m-line hero-line">
+                <span>Notre menu</span>
+              </span>
+              <span className="js-m-line hero-line">
+                <span>
+                  <em>gastronomique.</em>
+                </span>
+              </span>
+            </h1>
+            <p className="js-m-fade mhero__sub">
+              Explorez {products.length} plats savoureux, préparés avec passion et les meilleurs
+              ingrédients du marché.
+            </p>
+            <p className="js-m-fade mhero__count">
+              {filteredProducts.length} plat{filteredProducts.length > 1 ? 's' : ''} disponible
+              {filteredProducts.length > 1 ? 's' : ''}
+            </p>
+          </div>
+        </section>
 
-        <motion.div
-          className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.div variants={itemVariants}>
-            <span className="inline-block text-gold font-semibold text-sm sm:text-base mb-4 bg-gradient-to-r from-white/5 to-gold/10 px-4 py-2 rounded-full border border-gold/20">
-              ✨ Nos Spécialités
-            </span>
-          </motion.div>
-
-          <motion.h1
-            className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent"
-            variants={itemVariants}
-          >
-            Notre Menu Gastronomique
-          </motion.h1>
-
-          <motion.p
-            className="text-secondary-foreground/70 text-base sm:text-lg max-w-3xl mx-auto mb-8"
-            variants={itemVariants}
-          >
-            Explorez {products.length} plats savoureux, préparés avec passion et les meilleurs ingrédients. Une expérience culinaire qui ravira vos sens.
-          </motion.p>
-
-          <motion.div variants={itemVariants} className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-transparent to-gold/10 border border-gold/20 text-gold font-medium text-sm shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-gold" />
-              {filteredProducts.length} plat{filteredProducts.length > 1 ? 's' : ''} disponible{filteredProducts.length > 1 ? 's' : ''}
-            </div>
-          </motion.div>
-        </motion.div>
-      </motion.section>
-
-      {/* FILTERS SECTION */}
-      <motion.section
-        className="sticky top-16 z-40 py-6 sm:py-8 bg-gradient-to-b from-black via-slate-950 to-black backdrop-blur-sm border-b border-gold/10 shadow-lg"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            {/* SEARCH */}
-            <motion.div
-              className="relative flex-1"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gold/50" />
-              <Input
+        {/* Filtres */}
+        <section className="js-m-fade mfilters" aria-label="Filtres du menu">
+          <div className="mfilters__inner">
+            <div className="mfilters__search">
+              <Search className="h-4 w-4" />
+              <input
                 type="text"
-                placeholder="Rechercher un plat..."
+                placeholder="Rechercher un plat…"
                 value={search}
                 onChange={(e) => setSearch(e.currentTarget.value)}
-                className="pl-12 py-3 bg-white/5 border-gold/20 hover:border-gold/40 focus:ring-2 focus:ring-gold/20 focus:border-gold/60 transition-colors text-secondary-foreground placeholder:text-secondary-foreground/40"
+                aria-label="Rechercher un plat"
               />
               {search && (
-                <motion.button
-                  type="button"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  onClick={() => setSearch('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-foreground/40 hover:text-secondary-foreground/80 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </motion.button>
-              )}
-            </motion.div>
-
-            {/* ACTIVE FILTERS INDICATOR */}
-            <AnimatePresence>
-              {(search || selectedCategory !== 'all' || selectedDietary.length > 0) && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  onClick={() => {
-                    setSearch('');
-                    setSelectedCategory('all');
-                    setSelectedDietary([]);
-                  }}
-                  className="px-4 py-2 bg-gradient-to-r from-transparent to-gold/10 hover:to-gold/20 border border-gold/20 rounded-lg text-gold font-medium flex items-center gap-2 transition-colors whitespace-nowrap"
-                >
+                <button className="mfilters__clear" onClick={() => setSearch('')} aria-label="Effacer la recherche">
                   <X className="h-4 w-4" />
-                  Réinitialiser
-                </motion.button>
+                </button>
               )}
-            </AnimatePresence>
-          </div>
-
-          {/* FILTER BUTTONS */}
-          <motion.div
-            className="mt-6 space-y-4"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            {/* CATEGORIES */}
-            <div>
-              <p className="text-secondary-foreground/60 text-sm font-medium mb-3">Catégories</p>
-              <motion.div
-                className="flex flex-wrap gap-2"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <AnimatePresence mode="popLayout">
-                  {categories.map((cat, idx) => (
-                    <motion.button
-                      key={cat.id}
-                      variants={filterButtonVariants}
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={cn(
-                        'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300',
-                        selectedCategory === cat.id
-                          ? 'bg-gradient-to-r from-gold to-yellow-300 text-slate-900 shadow-2xl shadow-gold/30'
-                          : 'bg-white/5 border border-gold/20 text-secondary-foreground hover:border-gold/40 hover:bg-white/10'
-                      )}
-                    >
-                      {cat.name}
-                    </motion.button>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
             </div>
 
-            {/* DIETARY FILTERS */}
-            {dietaryFilters.length > 0 && (
-              <div>
-                <p className="text-secondary-foreground/60 text-sm font-medium mb-3">Filtres diététiques</p>
-                <motion.div
-                  className="flex flex-wrap gap-2"
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
+            <div className="mfilters__row">
+              <span className="mfilters__label">Catégories</span>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`bb-chip${selectedCategory === cat.id ? ' is-active' : ''}`}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  aria-pressed={selectedCategory === cat.id}
                 >
-                  <AnimatePresence mode="popLayout">
-                    {dietaryFilters.map((filter) => (
-                      <motion.button
-                        key={filter.id}
-                        variants={filterButtonVariants}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => toggleDietary(filter.id)}
-                        className={cn(
-                          'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300',
-                          selectedDietary.includes(filter.id)
-                            ? 'bg-gradient-to-r from-yellow-300 to-yellow-200 text-slate-900 shadow-2xl shadow-yellow-300/30'
-                            : 'bg-white/5 border border-yellow-300/20 text-secondary-foreground hover:border-yellow-300/40 hover:bg-white/10'
-                        )}
-                      >
-                        {filter.name}
-                      </motion.button>
-                    ))}
-                  </AnimatePresence>
-                </motion.div>
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+
+            {dietaryFilters.length > 0 && (
+              <div className="mfilters__row">
+                <span className="mfilters__label">Régimes</span>
+                {dietaryFilters.map((filter) => (
+                  <button
+                    key={filter.id}
+                    className={`bb-chip${selectedDietary.includes(filter.id) ? ' is-active' : ''}`}
+                    onClick={() => toggleDietary(filter.id)}
+                    aria-pressed={selectedDietary.includes(filter.id)}
+                  >
+                    {filter.name}
+                  </button>
+                ))}
+                {hasActiveFilters && (
+                  <button className="bb-chip" onClick={resetFilters}>
+                    ✕ Réinitialiser
+                  </button>
+                )}
               </div>
             )}
-          </motion.div>
-        </div>
-      </motion.section>
+          </div>
+        </section>
 
-      {/* PRODUCTS GRID */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-black via-slate-950/50 to-black">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Grille */}
+        <section className="mgrid-wrap">
           {filteredProducts.length === 0 ? (
-            <motion.div
-              className="text-center py-20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="mb-6"
-              >
-                <div className="text-6xl mb-4">🍽️</div>
-              </motion.div>
-              <p className="text-secondary-foreground/70 text-lg mb-6">
+            <div className="mempty">
+              <p style={{ fontSize: '2.4rem', marginBottom: '0.8rem' }} aria-hidden="true">
+                🍽️
+              </p>
+              <p style={{ marginBottom: '1.6rem' }}>
                 {products.length === 0
                   ? 'Aucun produit disponible pour le moment.'
                   : 'Aucun plat ne correspond à votre recherche.'}
               </p>
-              {search || selectedCategory !== 'all' || selectedDietary.length > 0 ? (
-                <Button
-                  onClick={() => {
-                    setSearch('');
-                    setSelectedCategory('all');
-                    setSelectedDietary([]);
-                  }}
-                  className="bg-gradient-to-r from-gold to-yellow-300 hover:from-yellow-300 text-slate-900 font-semibold shadow-lg px-5 py-3 rounded-lg"
-                >
+              {hasActiveFilters && (
+                <button onClick={resetFilters} className="bb-btn bb-btn--bronze">
                   Voir tous les plats
-                </Button>
-              ) : null}
-            </motion.div>
+                </button>
+              )}
+            </div>
           ) : (
-            <motion.div
-              className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8"
-              variants={productGridVariants}
-              initial="hidden"
-              animate="visible"
-              key={`${selectedCategory}-${selectedDietary.join(',')}-${search}`}
-            >
-              <AnimatePresence mode="popLayout">
-                {filteredProducts.map((product) => (
-                  <motion.div
-                    key={product.id}
-                    layout
-                    variants={itemVariants}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.4 }}
-                    className="rounded-xl p-1 bg-transparent hover:shadow-2xl hover:shadow-gold/20 transition-shadow transform-gpu will-change-transform"
-                  >
-                    <div className="rounded-lg overflow-hidden bg-gradient-to-br from-slate-900/40 to-transparent p-1">
-                      <div className="rounded-lg overflow-hidden bg-card">
-                        <ProductCard
-                          product={product}
-                          onViewDetails={setSelectedProduct}
-                        />
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
+            <div className="mgrid">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="js-m-card">
+                  <ProductCard product={product} onViewDetails={setSelectedProduct} />
+                </div>
+              ))}
+            </div>
           )}
-        </div>
-      </section>
+        </section>
 
-      {/* PRODUCT MODAL */}
-      <ProductModal
-        product={selectedProduct}
-        open={!!selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-      />
+        {/* Modale détail */}
+        <ProductModal
+          product={selectedProduct}
+          open={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      </div>
     </Layout>
   );
 }

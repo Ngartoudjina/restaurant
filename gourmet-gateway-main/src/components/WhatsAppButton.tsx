@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { whatsappUrl } from '@/config/site';
 
@@ -8,22 +7,17 @@ import { whatsappUrl } from '@/config/site';
  */
 export function WhatsAppButton() {
   return (
-    <motion.a
+    <a
       href={whatsappUrl()}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Commander sur WhatsApp"
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.4, delay: 0.6, type: 'spring', stiffness: 200 }}
-      whileHover={{ scale: 1.08 }}
-      whileTap={{ scale: 0.95 }}
-      className="group fixed bottom-6 left-6 z-50 flex items-center gap-3 rounded-full bg-[#25D366] pl-4 pr-5 py-3 text-black font-semibold shadow-2xl shadow-[#25D366]/40 hover:bg-[#1ebe5b] transition-colors"
+      className="group fixed bottom-6 left-6 z-50 flex items-center gap-3 rounded-full bg-[#25D366] pl-4 pr-5 py-3 text-black font-semibold shadow-2xl shadow-[#25D366]/40 hover:bg-[#1ebe5b] transition-all duration-300 hover:scale-105 active:scale-95 motion-safe:animate-[wa-pop_0.5s_cubic-bezier(0.16,1,0.3,1)_0.6s_both]"
     >
       {/* Halo pulsant (désactivé si l'utilisateur préfère moins d'animations) */}
       <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-60 motion-safe:animate-ping motion-reduce:hidden" />
       <MessageCircle className="relative h-6 w-6" />
       <span className="relative hidden sm:inline">Commander</span>
-    </motion.a>
+    </a>
   );
 }
