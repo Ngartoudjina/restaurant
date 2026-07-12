@@ -94,6 +94,14 @@ export default function Register() {
       {/* Formulaire papier */}
       <main className="auth__panel">
         <div className="auth__card">
+          <div className="auth__mobrand">
+            <Link to="/" className="brand">
+              Le <em>Gourmet</em>
+            </Link>
+            <Link to="/" className="home">
+              ← Accueil
+            </Link>
+          </div>
           <div className="auth__head">
             <p className="auth__eyebrow">Bienvenue</p>
             <h1 className="auth__title">

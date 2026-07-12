@@ -943,8 +943,8 @@ textarea.rinput:focus { border-color: var(--bb-bronze-ink); }
 .auth__pitch h2 em { font-style: italic; color: var(--bb-bronze); }
 .auth__pitch p { color: var(--bb-ivory-soft); max-width: 40ch; line-height: 1.65; margin: 0; }
 .auth__note { position: relative; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--bb-ivory-mute); }
-.auth__panel { display: flex; align-items: center; justify-content: center; padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem); }
-.auth__card { width: 100%; max-width: 440px; }
+.auth__panel { display: flex; align-items: center; justify-content: center; min-width: 0; padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem); }
+.auth__card { width: 100%; max-width: 440px; min-width: 0; }
 .auth__head { margin-bottom: 2rem; }
 .auth__eyebrow { font-size: 0.68rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--bb-bronze-ink); margin: 0 0 0.8rem; }
 .auth__title { font-family: var(--bb-display); font-weight: 600; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.02; margin: 0; color: var(--bb-ink); }
@@ -973,3 +973,70 @@ textarea.rinput:focus { border-color: var(--bb-bronze-ink); }
 .acct-status { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3rem 0.6rem; border-radius: 999px; border: 1px solid var(--bb-hairline-ink); color: var(--bb-ink-soft); white-space: nowrap; }
 .acct-status.ok { color: #1c7a4d; border-color: rgba(28, 122, 77, 0.4); }
 .acct-status.no { color: var(--bb-ember); border-color: rgba(178, 76, 34, 0.4); }
+
+/* ============================================================
+   RAFFINEMENTS MOBILE — hauteur de nav cohérente, sticky maîtrisé,
+   cibles tactiles, anti-débordement.
+   ============================================================ */
+
+:root { --bb-nav-h: 70px; }
+
+/* Les barres sticky s'alignent sur la vraie hauteur de la navbar */
+.mfilters { top: var(--bb-nav-h); }
+
+/* Sidebar récap : ne colle QUE sur desktop (sinon gênant au pouce) */
+.bb-sticky { position: static; }
+@media (min-width: 1024px) {
+  .bb-sticky { position: sticky; top: calc(var(--bb-nav-h) + 16px); }
+}
+
+/* Titres de section : autoriser la coupe des mots très longs (ex. « gastronomique ») */
+.mhero__title, .final__title, .sig__title, .philo__title, .auth__title { overflow-wrap: break-word; }
+
+/* Anti-débordement horizontal (clip = ne casse pas position:sticky) */
+body { overflow-x: clip; }
+
+/* Marque + retour accueil visibles sur mobile pour les pages auth */
+.auth__mobrand { display: none; }
+@media (max-width: 899px) {
+  .auth__mobrand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 1.6rem; margin-bottom: 1.6rem;
+    border-bottom: 1px solid var(--bb-hairline-ink);
+  }
+  .auth__mobrand a.brand { font-family: var(--bb-display); font-weight: 600; font-size: 1.35rem; color: var(--bb-ink); text-decoration: none; }
+  .auth__mobrand a.brand em { font-style: italic; color: var(--bb-bronze-ink); }
+  .auth__mobrand a.home { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bb-bronze-ink); text-decoration: none; }
+}
+
+@media (max-width: 640px) {
+  /* En-têtes de page un peu plus compacts */
+  .mhero { padding-top: clamp(2.5rem, 7vh, 5rem); }
+  .mhero__title { font-size: clamp(2.05rem, 8.5vw, 3.4rem); }
+
+  /* Cibles tactiles ≥ 40px */
+  .cstep { width: 40px; height: 40px; }
+  .voice__dot { height: 16px; }
+  .acct-tab { padding: 0.6rem 0.9rem; }
+
+  /* Boutons pleine largeur plus confortables dans les tunnels */
+  .rform .bb-btn, .otype__opt { min-height: 48px; }
+
+  /* Galerie signatures : première vignette qui « invite » au swipe */
+  .sig__tile { width: 78vw; max-width: 320px; }
+
+  /* Réduire l'amplitude visuelle des halos (perf + sobriété) */
+  .final::before, .auth__aside::before { opacity: 0.7; }
+
+  /* Panier : total bien lisible */
+  .sumtotal .val { font-size: 1.5rem; }
+}
+
+/* Tablette : la galerie pinnée est désactivée (<900px) → swipe fluide */
+@media (max-width: 899px) {
+  .sig { padding-bottom: 0; }
+  .sig__viewport { padding-bottom: clamp(3rem, 8vh, 5rem); }
+}
+
+/* Les enfants de grille ne forcent pas la largeur (anti-débordement mobile) */
+.resv-grid > *, .mgrid > *, .astory__inner > *, .team__grid > *, .bbf__grid > * { min-width: 0; }

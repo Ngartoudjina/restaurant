@@ -214,7 +214,7 @@ export default function Cart() {
 
           {/* Récapitulatif */}
           <aside>
-            <div className="rform" style={{ position: 'sticky', top: 84 }}>
+            <div className="rform bb-sticky">
               <div className="rform__head">
                 <h2 className="rform__title">L'addition</h2>
               </div>

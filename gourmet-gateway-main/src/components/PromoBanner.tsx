@@ -33,7 +33,7 @@ export function PromoBanner() {
       style={{ background: 'var(--bb-bronze, #c39a5a)', color: 'var(--bb-ebony, #15100c)' }}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-center gap-3 py-2 text-sm font-medium text-center">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 py-2 pr-8 sm:pr-0 text-xs sm:text-sm font-medium text-center text-balance">
           <Gift className="h-4 w-4 flex-shrink-0" />
           <p>
             <span className="font-bold">{siteConfig.promo.label}</span>
