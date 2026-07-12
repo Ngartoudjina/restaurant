@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, ChefHat } from 'lucide-react';
-import { Layout } from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
@@ -15,9 +11,9 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import '@/styles/braise-bronze.css';
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -38,22 +34,14 @@ export default function Login() {
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
-    
     const success = await login(data.email, data.password);
-    
     if (success) {
-      toast({
-        title: 'Connexion réussie',
-        description: 'Bienvenue !',
-      });
+      toast({ title: 'Connexion réussie', description: 'Bienvenue !' });
       navigate(from, { replace: true });
     } else {
       toast({
@@ -62,102 +50,94 @@ export default function Login() {
         variant: 'destructive',
       });
     }
-    
     setIsLoading(false);
   };
 
   return (
-    <Layout>
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-md mx-auto">
-            <Card>
-              <CardHeader className="text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <ChefHat className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle className="font-serif text-2xl">Connexion</CardTitle>
-                <CardDescription>
-                  Connectez-vous à votre compte Le Gourmet
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="votre@email.com"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Mot de passe</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Input
-                                type={showPassword ? 'text' : 'password'}
-                                placeholder="••••••••"
-                                {...field}
-                              />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="absolute right-0 top-0 h-full px-3"
-                                onClick={() => setShowPassword(!showPassword)}
-                              >
-                                {showPassword ? (
-                                  <EyeOff className="h-4 w-4" />
-                                ) : (
-                                  <Eye className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Connexion...' : 'Se connecter'}
-                    </Button>
-                  </form>
-                </Form>
-
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    Pas encore de compte ?{' '}
-                    <Link to="/register" className="text-primary hover:underline font-medium">
-                      S'inscrire
-                    </Link>
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+    <div className="auth">
+      {/* Panneau nuit */}
+      <aside className="auth__aside">
+        <Link to="/" className="auth__brand">
+          Le <em>Gourmet</em>
+        </Link>
+        <div className="auth__pitch">
+          <h2>
+            Le goût de <em>chez vous</em>, à portée de clic.
+          </h2>
+          <p>
+            Retrouvez vos commandes, vos réservations et vos plats favoris. La table vous attend.
+          </p>
         </div>
-      </section>
-    </Layout>
+        <span className="auth__note">Gastronomie béninoise · Cotonou</span>
+      </aside>
+
+      {/* Formulaire papier */}
+      <main className="auth__panel">
+        <div className="auth__card">
+          <div className="auth__head">
+            <p className="auth__eyebrow">Content de vous revoir</p>
+            <h1 className="auth__title">
+              Se <em>connecter</em>
+            </h1>
+            <p className="auth__sub">Accédez à votre compte Le Gourmet.</p>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} style={{ display: 'grid', gap: '1.5rem' }}>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <span className="rlabel">Email</span>
+                    <FormControl>
+                      <input type="email" className="rinput" placeholder="vous@email.com" {...field} />
+                    </FormControl>
+                    <FormMessage className="rerror" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <span className="rlabel">Mot de passe</span>
+                    <FormControl>
+                      <div className="auth__pass">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          className="rinput"
+                          placeholder="••••••••"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="auth__eye"
+                          onClick={() => setShowPassword((v) => !v)}
+                          aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage className="rerror" />
+                  </FormItem>
+                )}
+              />
+
+              <button type="submit" className="bb-btn news__btn" style={{ width: '100%' }} disabled={isLoading}>
+                {isLoading ? 'Connexion…' : 'Se connecter'}
+              </button>
+            </form>
+          </Form>
+
+          <p className="auth__foot">
+            Pas encore de compte ? <Link to="/register">Créer un compte</Link>
+          </p>
+        </div>
+      </main>
+    </div>
   );
 }

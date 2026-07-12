@@ -2,11 +2,6 @@ import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { User, ShoppingBag, Calendar, Settings, LogOut } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Order, Reservation } from '@/lib/data';
@@ -18,9 +13,9 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import '@/styles/braise-bronze.css';
 
 const profileSchema = z.object({
   firstName: z.string().min(2),
@@ -31,11 +26,30 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
+type TabId = 'profile' | 'orders' | 'reservations' | 'settings';
+
+const TABS: { id: TabId; label: string; icon: typeof User }[] = [
+  { id: 'profile', label: 'Profil', icon: User },
+  { id: 'orders', label: 'Commandes', icon: ShoppingBag },
+  { id: 'reservations', label: 'Réservations', icon: Calendar },
+  { id: 'settings', label: 'Paramètres', icon: Settings },
+];
+
+const STATUS_LABELS: Record<Order['status'], string> = {
+  pending: 'En attente',
+  confirmed: 'Confirmée',
+  preparing: 'En préparation',
+  ready: 'Prête',
+  delivered: 'Livrée',
+  cancelled: 'Annulée',
+};
+
 export default function Account() {
   const { user, isLoading, logout, updateUser } = useAuth();
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [tab, setTab] = useState<TabId>('profile');
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -56,21 +70,23 @@ export default function Account() {
         phone: user.phone,
       });
 
-      // Load orders
       const allOrders: Order[] = JSON.parse(localStorage.getItem('legourmet_orders') || '[]');
-      setOrders(allOrders.filter(o => o.userId === user.id).reverse());
+      setOrders(allOrders.filter((o) => o.userId === user.id).reverse());
 
-      // Load reservations
-      const allReservations: Reservation[] = JSON.parse(localStorage.getItem('legourmet_reservations') || '[]');
-      setReservations(allReservations.filter(r => r.userId === user.id || r.email === user.email).reverse());
+      const allReservations: Reservation[] = JSON.parse(
+        localStorage.getItem('legourmet_reservations') || '[]'
+      );
+      setReservations(
+        allReservations.filter((r) => r.userId === user.id || r.email === user.email).reverse()
+      );
     }
   }, [user, form]);
 
   if (isLoading) {
     return (
       <Layout>
-        <div className="py-20 text-center">
-          <p>Chargement...</p>
+        <div className="mstate">
+          <p>Chargement…</p>
         </div>
       </Layout>
     );
@@ -82,258 +98,196 @@ export default function Account() {
 
   const onSubmit = (data: ProfileFormData) => {
     updateUser(data);
-    toast({
-      title: 'Profil mis à jour',
-      description: 'Vos informations ont été sauvegardées.',
-    });
+    toast({ title: 'Profil mis à jour', description: 'Vos informations ont été sauvegardées.' });
   };
 
-  const getStatusBadge = (status: Order['status']) => {
-    const styles: Record<Order['status'], string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      confirmed: 'bg-blue-100 text-blue-800',
-      preparing: 'bg-purple-100 text-purple-800',
-      ready: 'bg-green-100 text-green-800',
-      delivered: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
-    };
-    const labels: Record<Order['status'], string> = {
-      pending: 'En attente',
-      confirmed: 'Confirmée',
-      preparing: 'En préparation',
-      ready: 'Prête',
-      delivered: 'Livrée',
-      cancelled: 'Annulée',
-    };
-    return <Badge className={styles[status]}>{labels[status]}</Badge>;
-  };
+  const fcfa = (n: number) => `${Number(n || 0).toLocaleString('fr-FR')} FCFA`;
 
   return (
     <Layout>
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="font-serif text-3xl font-bold">Mon Compte</h1>
-            <Button variant="outline" onClick={logout} className="text-destructive">
-              <LogOut className="h-4 w-4 mr-2" />
-              Déconnexion
-            </Button>
+      {/* En-tête — la nuit */}
+      <section className="mhero" style={{ paddingBottom: 'clamp(2rem, 5vh, 3rem)' }}>
+        <div className="mhero__inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '1rem', flexWrap: 'wrap' }}>
+          <div>
+            <p className="philo__eyebrow" style={{ color: 'var(--bb-bronze)' }}>
+              Bonjour {user.firstName}
+            </p>
+            <h1 className="mhero__title">
+              Mon <em>compte.</em>
+            </h1>
           </div>
+          <button onClick={logout} className="bb-btn bb-btn--hairline bb-btn--sm">
+            <LogOut className="h-4 w-4" />
+            Déconnexion
+          </button>
+        </div>
+      </section>
 
-          <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="w-full justify-start overflow-x-auto">
-              <TabsTrigger value="profile" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Profil
-              </TabsTrigger>
-              <TabsTrigger value="orders" className="flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4" />
-                Commandes
-              </TabsTrigger>
-              <TabsTrigger value="reservations" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Réservations
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Paramètres
-              </TabsTrigger>
-            </TabsList>
+      {/* Corps — le papier */}
+      <section className="resv-body">
+        <div className="resv-grid" style={{ gridTemplateColumns: '1fr', maxWidth: 820, marginInline: 'auto' }}>
+          <div className="rform">
+            {/* Onglets */}
+            <div className="acct-tabs" role="tablist">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  role="tab"
+                  aria-selected={tab === t.id}
+                  className={`acct-tab${tab === t.id ? ' is-active' : ''}`}
+                  onClick={() => setTab(t.id)}
+                >
+                  <t.icon className="h-4 w-4" />
+                  {t.label}
+                </button>
+              ))}
+            </div>
 
-            {/* Profile Tab */}
-            <TabsContent value="profile">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Informations personnelles</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="firstName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Prénom</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="lastName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Nom</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+            {/* Profil */}
+            {tab === 'profile' && (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} style={{ display: 'grid', gap: '1.4rem' }}>
+                  <div className="grid2">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <span className="rlabel">Prénom</span>
+                          <FormControl>
+                            <input className="rinput" {...field} />
+                          </FormControl>
+                          <FormMessage className="rerror" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <span className="rlabel">Nom</span>
+                          <FormControl>
+                            <input className="rinput" {...field} />
+                          </FormControl>
+                          <FormMessage className="rerror" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <span className="rlabel">Email</span>
+                        <FormControl>
+                          <input type="email" className="rinput" {...field} />
+                        </FormControl>
+                        <FormMessage className="rerror" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <span className="rlabel">Téléphone</span>
+                        <FormControl>
+                          <input className="rinput" {...field} />
+                        </FormControl>
+                        <FormMessage className="rerror" />
+                      </FormItem>
+                    )}
+                  />
+                  <button type="submit" className="bb-btn news__btn" style={{ justifySelf: 'start' }}>
+                    Sauvegarder
+                  </button>
+                </form>
+              </Form>
+            )}
 
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input type="email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Téléphone</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button type="submit" className="bg-primary text-primary-foreground">
-                        Sauvegarder
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Orders Tab */}
-            <TabsContent value="orders">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Historique des commandes</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {orders.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">
-                      Aucune commande pour le moment.
-                    </p>
-                  ) : (
-                    <div className="space-y-4">
-                      {orders.map(order => (
-                        <div
-                          key={order.id}
-                          className="border border-border rounded-lg p-4 space-y-3"
-                        >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium">Commande #{order.id.slice(-6)}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(order.createdAt).toLocaleDateString('fr-FR', {
-                                  day: 'numeric',
-                                  month: 'long',
-                                  year: 'numeric',
-                                })}
-                              </p>
-                            </div>
-                            {getStatusBadge(order.status)}
-                          </div>
-                          <div className="text-sm space-y-1">
-                            {order.items.map(item => (
-                              <p key={item.productId} className="text-muted-foreground">
-                                {item.quantity}x {item.name}
-                              </p>
-                            ))}
-                          </div>
-                          <div className="flex justify-between items-center pt-2 border-t border-border">
-                            <span className="text-sm">
-                              {order.type === 'delivery' ? 'Livraison' : order.type === 'takeaway' ? 'À emporter' : 'Sur place'}
-                            </span>
-                            <span className="font-bold text-primary">{order.total.toLocaleString('fr-FR')} FCFA</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Reservations Tab */}
-            <TabsContent value="reservations">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Mes réservations</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {reservations.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">
-                      Aucune réservation pour le moment.
-                    </p>
-                  ) : (
-                    <div className="space-y-4">
-                      {reservations.map(res => (
-                        <div
-                          key={res.id}
-                          className="border border-border rounded-lg p-4"
-                        >
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <p className="font-medium">
-                                {new Date(res.date).toLocaleDateString('fr-FR', {
-                                  weekday: 'long',
-                                  day: 'numeric',
-                                  month: 'long',
-                                })}
-                              </p>
-                              <p className="text-muted-foreground">{res.time}</p>
-                            </div>
-                            <Badge className={
-                              res.status === 'confirmed' 
-                                ? 'bg-green-100 text-green-800' 
-                                : res.status === 'cancelled'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-yellow-100 text-yellow-800'
-                            }>
-                              {res.status === 'confirmed' ? 'Confirmée' : res.status === 'cancelled' ? 'Annulée' : 'En attente'}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {res.guests} personne{res.guests > 1 ? 's' : ''}
+            {/* Commandes */}
+            {tab === 'orders' && (
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                {orders.length === 0 ? (
+                  <p className="txt" style={{ textAlign: 'center', padding: '2rem 0' }}>
+                    Aucune commande pour le moment.
+                  </p>
+                ) : (
+                  orders.map((order) => (
+                    <div key={order.id} style={{ border: '1px solid var(--bb-hairline-ink)', borderRadius: 4, padding: '1rem 1.2rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.7rem' }}>
+                        <div>
+                          <p style={{ fontFamily: 'var(--bb-display)', fontWeight: 600, margin: 0, color: 'var(--bb-ink)' }}>
+                            Commande #{order.id.slice(-6)}
+                          </p>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--bb-ink-mute)', margin: '0.2rem 0 0' }}>
+                            {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                           </p>
                         </div>
-                      ))}
+                        <span className="acct-status">{STATUS_LABELS[order.status]}</span>
+                      </div>
+                      <div style={{ display: 'grid', gap: '0.2rem', marginBottom: '0.6rem' }}>
+                        {order.items.map((item) => (
+                          <p key={item.productId} style={{ fontSize: '0.85rem', color: 'var(--bb-ink-soft)', margin: 0 }}>
+                            {item.quantity}× {item.name}
+                          </p>
+                        ))}
+                      </div>
+                      <div className="sumrow" style={{ borderTop: '1px solid var(--bb-hairline-ink)', paddingTop: '0.6rem' }}>
+                        <span>
+                          {order.type === 'delivery' ? 'Livraison' : order.type === 'takeaway' ? 'À emporter' : 'Sur place'}
+                        </span>
+                        <b style={{ color: 'var(--bb-bronze-ink)' }}>{fcfa(order.total)}</b>
+                      </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                  ))
+                )}
+              </div>
+            )}
 
-            {/* Settings Tab */}
-            <TabsContent value="settings">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Paramètres du compte</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground">
-                    Gérez vos préférences et paramètres de compte.
+            {/* Réservations */}
+            {tab === 'reservations' && (
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                {reservations.length === 0 ? (
+                  <p className="txt" style={{ textAlign: 'center', padding: '2rem 0' }}>
+                    Aucune réservation pour le moment.
                   </p>
-                  <Button variant="destructive" onClick={logout}>
-                    Supprimer mon compte
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                ) : (
+                  reservations.map((res) => (
+                    <div key={res.id} style={{ border: '1px solid var(--bb-hairline-ink)', borderRadius: 4, padding: '1rem 1.2rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                        <div>
+                          <p style={{ fontFamily: 'var(--bb-display)', fontWeight: 600, margin: 0, color: 'var(--bb-ink)' }}>
+                            {new Date(res.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                          </p>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--bb-ink-soft)', margin: '0.2rem 0 0' }}>
+                            {res.time} · {res.guests} personne{res.guests > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <span className={`acct-status${res.status === 'confirmed' ? ' ok' : res.status === 'cancelled' ? ' no' : ''}`}>
+                          {res.status === 'confirmed' ? 'Confirmée' : res.status === 'cancelled' ? 'Annulée' : 'En attente'}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* Paramètres */}
+            {tab === 'settings' && (
+              <div style={{ display: 'grid', gap: '1.2rem' }}>
+                <p className="txt">Gérez vos préférences et la sécurité de votre compte.</p>
+                <button onClick={logout} className="bb-btn bb-btn--hairline" style={{ justifySelf: 'start', color: 'var(--bb-ember)', borderColor: 'rgba(178,76,34,0.4)' }}>
+                  <LogOut className="h-4 w-4" />
+                  Se déconnecter
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </Layout>
