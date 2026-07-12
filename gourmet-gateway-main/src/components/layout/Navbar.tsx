@@ -1,321 +1,225 @@
-import { ShoppingCart, User, Menu as MenuIcon, Package, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { ShoppingCart, User, Package, Menu as MenuIcon, X } from 'lucide-react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { siteConfig, whatsappUrl } from '@/config/site';
+import '@/styles/braise-bronze.css';
 
-const navItems = [
+gsap.registerPlugin(useGSAP);
+
+const NAV_ITEMS = [
   { label: 'Accueil', path: '/' },
   { label: 'Menu', path: '/menu' },
   { label: 'Réservation', path: '/reservation' },
   { label: 'À propos', path: '/about' },
-  { label: 'Contact', path: '/contact' }
+  { label: 'Contact', path: '/contact' },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: -10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-};
-
+/**
+ * Navigation « Braise & Bronze » : barre ébène translucide + menu
+ * plein écran cinématique (rideau clip-path, items en stagger).
+ */
 export function Navbar() {
   const navigate = useNavigate();
   const { itemCount } = useCart();
   const { user } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+
+  // Timeline du menu plein écran (construite une fois)
+  useGSAP(
+    () => {
+      const overlay = overlayRef.current;
+      if (!overlay) return;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const tl = gsap.timeline({
+        paused: true,
+        onReverseComplete: () => gsap.set(overlay, { visibility: 'hidden' }),
+      });
+
+      if (reduce) {
+        tl.set(overlay, { visibility: 'visible', clipPath: 'inset(0% 0 0% 0)' });
+      } else {
+        tl.set(overlay, { visibility: 'visible' })
+          .to(overlay, { clipPath: 'inset(0 0 0% 0)', duration: 0.7, ease: 'expo.inOut' })
+          .from(
+            '.js-ov-item > a',
+            { yPercent: 110, duration: 0.7, ease: 'expo.out', stagger: 0.06 },
+            '-=0.25'
+          )
+          .from('.js-ov-foot', { opacity: 0, y: 14, duration: 0.5, ease: 'power2.out' }, '-=0.3');
+      }
+      tlRef.current = tl;
+    },
+    { scope: rootRef }
+  );
+
+  // Ouvre / ferme + verrouille le scroll
+  useEffect(() => {
+    const tl = tlRef.current;
+    if (!tl) return;
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      tl.play();
+    } else {
+      document.body.style.overflow = '';
+      tl.reverse();
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  const go = (path: string) => {
+    setOpen(false);
+    navigate(path);
+  };
 
   return (
-    <motion.nav 
-      className="bg-gradient-to-r from-black via-black to-slate-900 text-white sticky top-0 z-50 backdrop-blur-md bg-opacity-95 border-b border-gold/10"
-      initial={{ opacity: 0, y: -100 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-    >
-      <div className="container mx-auto px-4 lg:px-6">
-        <div className="py-3 lg:py-4 flex items-center justify-between">
-          {/* Logo avec animation */}
-          <Link to="/" className="flex-shrink-0">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative"
-            >
-              <div className="text-2xl lg:text-3xl font-serif font-bold">
-                <span className="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">
-                  Le Gourmet
-                </span>
-              </div>
-              <motion.div
-                className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-gold to-yellow-300"
-                initial={{ width: 0 }}
-                whileHover={{ width: '100%' }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.div>
-          </Link>
+    <header ref={rootRef} className="bbnav">
+      <div className="bbnav__bar">
+        <Link to="/" className="bbnav__brand" aria-label="Le Gourmet — accueil">
+          Le <em>Gourmet</em>
+        </Link>
 
-          {/* Navigation Desktop */}
-          <motion.div 
-            className="hidden lg:flex items-center space-x-1"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+        {/* Liens desktop */}
+        <nav className="bbnav__links" aria-label="Navigation principale">
+          {NAV_ITEMS.map((item) => (
+            <Link key={item.path} to={item.path} className="bbnav__link">
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Actions */}
+        <div className="bbnav__actions">
+          {user && (
+            <button
+              className="bbnav__icon bbnav__hide-sm"
+              onClick={() => navigate('/orders')}
+              aria-label="Historique des commandes"
+              title="Mes commandes"
+            >
+              <Package className="h-5 w-5" />
+            </button>
+          )}
+
+          <button
+            className="bbnav__icon"
+            onClick={() => navigate('/cart')}
+            aria-label={`Panier — ${itemCount} article${itemCount > 1 ? 's' : ''}`}
           >
-            {navItems.map((item) => (
-              <motion.div
-                key={item.path}
-                variants={itemVariants}
-              >
-                <Link 
-                  to={item.path}
-                  className="relative px-4 py-2 text-sm font-medium group overflow-hidden rounded-lg"
-                >
-                  <motion.div
-                    className="absolute inset-0 bg-gold/10"
-                    initial={{ x: '-100%' }}
-                    whileHover={{ x: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <span className="relative z-10 group-hover:text-gold transition duration-300">
-                    {item.label}
-                  </span>
-                  <motion.div
-                    className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-gold to-yellow-300"
-                    initial={{ width: 0 }}
-                    whileHover={{ width: '100%' }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-2 lg:space-x-4">
-            {/* Mes commandes (Desktop) */}
-            {user && (
-              <motion.button
-                onClick={() => navigate('/orders')}
-                className="hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-lg bg-gold/10 hover:bg-gold/20 text-gold transition-colors relative"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                title="Historique des commandes"
-              >
-                <Package className="h-5 w-5" />
-                <motion.div
-                  className="absolute -inset-0.5 bg-gradient-to-r from-gold/50 to-yellow-300/50 rounded-lg -z-10"
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.button>
+            <ShoppingCart className="h-5 w-5" />
+            {itemCount > 0 && (
+              <span className="bbnav__badge">{itemCount > 9 ? '9+' : itemCount}</span>
             )}
+          </button>
 
-            {/* Panier */}
-            <motion.button
-              onClick={() => navigate('/cart')}
-              className="relative w-10 h-10 lg:w-11 lg:h-11 rounded-lg bg-gradient-to-br from-gold/20 to-gold/10 hover:from-gold/30 hover:to-gold/20 text-gold transition-all duration-300 flex items-center justify-center"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+          {user ? (
+            <button
+              className="bbnav__icon bbnav__hide-sm"
+              onClick={() => navigate('/account')}
+              aria-label="Mon compte"
             >
-              <ShoppingCart className="h-5 w-5" />
-              <AnimatePresence>
-                {itemCount > 0 && (
-                  <motion.span
-                    className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg"
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    exit={{ scale: 0, rotate: 180 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 10 }}
-                  >
-                    {itemCount > 9 ? '9+' : itemCount}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-              <motion.div
-                className="absolute -inset-0.5 bg-gradient-to-r from-gold/50 to-yellow-300/50 rounded-lg -z-10"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.button>
-
-            {/* Utilisateur / Connexion */}
-            {user ? (
-              <motion.button
-                onClick={() => navigate('/account')}
-                className="hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-lg bg-gold/10 hover:bg-gold/20 text-gold transition-colors relative"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <User className="h-5 w-5" />
-                <motion.div
-                  className="absolute -inset-0.5 bg-gradient-to-r from-gold/50 to-yellow-300/50 rounded-lg -z-10"
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.button>
-            ) : (
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="hidden sm:block"
-              >
-                <Button
-                  onClick={() => navigate('/login')}
-                  className="bg-gradient-to-r from-gold to-yellow-300 text-black hover:from-yellow-300 hover:to-gold font-semibold text-sm h-10 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Connexion
-                </Button>
-              </motion.div>
-            )}
-
-            {/* Menu mobile */}
-            <motion.button
-              className="lg:hidden p-2"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              <User className="h-5 w-5" />
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="bb-btn bb-btn--bronze bb-btn--sm bbnav__hide-sm"
             >
-              <AnimatePresence mode="wait">
-                {mobileMenuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <X className="h-6 w-6" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="open"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <MenuIcon className="h-6 w-6" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
-          </div>
+              Connexion
+            </button>
+          )}
+
+          <button
+            className="bbnav__icon bbnav__burger"
+            onClick={() => setOpen(true)}
+            aria-label="Ouvrir le menu"
+            aria-expanded={open}
+          >
+            <MenuIcon className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Menu plein écran */}
+      <div ref={overlayRef} className="bbnav-overlay" role="dialog" aria-modal="true" aria-label="Menu">
+        <div className="bbnav-overlay__head">
+          <span className="bbnav__brand" aria-hidden="true">
+            Le <em>Gourmet</em>
+          </span>
+          <button className="bbnav__icon" onClick={() => setOpen(false)} aria-label="Fermer le menu">
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
-        {/* Menu Mobile avec design moderne */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              className="lg:hidden pb-4"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="pt-4 border-t border-gold/10 space-y-2">
-                {navItems.map((item, idx) => (
-                  <motion.div
-                    key={item.path}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <Link
-                      to={item.path}
-                      className="block px-4 py-3 rounded-lg hover:bg-gold/10 transition-colors text-sm font-medium group relative overflow-hidden"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-gold/0 to-gold/10"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: 0 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                      <span className="relative z-10 group-hover:text-gold transition duration-300">
-                        {item.label}
-                      </span>
-                    </Link>
-                  </motion.div>
-                ))}
-
-                {/* Mes commandes (Mobile) */}
-                {user && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: navItems.length * 0.05 }}
-                  >
-                    <Link
-                      to="/orders"
-                      className="block px-4 py-3 rounded-lg hover:bg-gold/10 transition-colors text-sm font-medium group relative overflow-hidden"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-gold/0 to-gold/10"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: 0 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                      <span className="relative z-10 group-hover:text-gold transition duration-300 flex items-center gap-2">
-                        <Package className="h-4 w-4" />
-                        Mes commandes
-                      </span>
-                    </Link>
-                  </motion.div>
-                )}
-
-                {/* Divider */}
-                <div className="my-2 h-px bg-gradient-to-r from-gold/0 via-gold/20 to-gold/0" />
-
-                {/* User actions (Mobile) */}
-                <motion.div
-                  className="flex flex-col gap-2 pt-2"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: (navItems.length + 1) * 0.05 }}
-                >
-                  {user ? (
-                    <button
-                      onClick={() => {
-                        navigate('/account');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-3 rounded-lg bg-gold/10 hover:bg-gold/20 text-gold text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                    >
-                      <User className="h-4 w-4" />
-                      Mon compte
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        navigate('/login');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-gold to-yellow-300 text-black text-sm font-semibold transition-all duration-300 hover:shadow-lg"
-                    >
-                      Connexion
-                    </button>
-                  )}
-                </motion.div>
-              </div>
-            </motion.div>
+        <nav className="bbnav-overlay__menu" aria-label="Navigation">
+          {NAV_ITEMS.map((item, i) => (
+            <div key={item.path} className="js-ov-item bbnav-overlay__item">
+              <a
+                href={item.path}
+                onClick={(e) => {
+                  e.preventDefault();
+                  go(item.path);
+                }}
+              >
+                <span className="idx">0{i + 1}</span>
+                {item.label}
+              </a>
+            </div>
+          ))}
+          {user && (
+            <div className="js-ov-item bbnav-overlay__item">
+              <a
+                href="/orders"
+                onClick={(e) => {
+                  e.preventDefault();
+                  go('/orders');
+                }}
+              >
+                <span className="idx">0{NAV_ITEMS.length + 1}</span>
+                Mes commandes
+              </a>
+            </div>
           )}
-        </AnimatePresence>
+        </nav>
+
+        <div className="js-ov-foot bbnav-overlay__foot">
+          <a href={siteConfig.contact.phoneLink}>{siteConfig.contact.phoneDisplay}</a>
+          <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+          {user ? (
+            <a
+              href="/account"
+              onClick={(e) => {
+                e.preventDefault();
+                go('/account');
+              }}
+            >
+              Mon compte
+            </a>
+          ) : (
+            <a
+              href="/login"
+              onClick={(e) => {
+                e.preventDefault();
+                go('/login');
+              }}
+            >
+              Connexion
+            </a>
+          )}
+          <span>{siteConfig.contact.addressCity} · {siteConfig.contact.addressCountry}</span>
+        </div>
       </div>
-    </motion.nav>
+    </header>
   );
 }

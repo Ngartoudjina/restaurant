@@ -28,7 +28,10 @@ export function PromoBanner() {
   };
 
   return (
-    <div className="relative bg-gradient-to-r from-gold via-yellow-300 to-gold text-black">
+    <div
+      className="relative"
+      style={{ background: 'var(--bb-bronze, #c39a5a)', color: 'var(--bb-ebony, #15100c)' }}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center gap-3 py-2 text-sm font-medium text-center">
           <Gift className="h-4 w-4 flex-shrink-0" />

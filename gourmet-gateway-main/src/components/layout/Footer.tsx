@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ChefHat, MapPin, Phone, Clock, Facebook, Instagram, Twitter, MessageCircle, ArrowUpRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { MapPin, Phone, Clock, Facebook, Instagram, Twitter, MessageCircle } from 'lucide-react';
 import { siteConfig, whatsappUrl } from '@/config/site';
+import '@/styles/braise-bronze.css';
 
 // Réseaux sociaux : on n'affiche que ceux qui ont une URL renseignée.
 const socialLinks = [
@@ -10,273 +10,115 @@ const socialLinks = [
   { icon: Twitter, href: siteConfig.social.twitter, label: 'Twitter / X' },
 ].filter((s) => s.href);
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
+const NAV = [
+  { label: 'Accueil', to: '/' },
+  { label: 'Notre menu', to: '/menu' },
+  { label: 'Réservation', to: '/reservation' },
+  { label: 'À propos', to: '/about' },
+  { label: 'Contact', to: '/contact' },
+];
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
-  },
-};
-
-const socialVariants = {
-  hidden: { scale: 0, opacity: 0 },
-  visible: {
-    scale: 1,
-    opacity: 1,
-    transition: { type: 'spring', stiffness: 200, damping: 20 },
-  },
-  hover: { scale: 1.15, rotateZ: 5 },
-};
-
+/**
+ * Footer « fin de service » — l'écran s'éteint comme une salle
+ * après le dernier couvert : ébène, hairlines, une seule voix bronze.
+ */
 export function Footer() {
   return (
-    <footer className="relative bg-gradient-to-b from-slate-950 via-black to-slate-900 text-secondary-foreground border-t border-gold/10 overflow-hidden">
-      {/* Animated Background Elements */}
-      <motion.div
-        className="absolute top-0 right-0 w-96 h-96 rounded-full bg-gold/5 blur-3xl"
-        animate={{
-          y: [0, 30, 0],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-yellow-300/5 blur-3xl"
-        animate={{
-          y: [0, -30, 0],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-      />
-
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-        {/* Main Grid */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12 lg:mb-16"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '0px 0px -100px 0px' }}
-        >
-          {/* Brand Section */}
-          <motion.div className="space-y-6" variants={itemVariants}>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-3 group"
-            >
-              <motion.div
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.6 }}
-                className="p-2 bg-gradient-to-br from-gold/20 to-yellow-300/10 rounded-lg group-hover:from-gold/40 group-hover:to-yellow-300/20 transition-colors"
-              >
-                <ChefHat className="h-6 w-6 text-gold" />
-              </motion.div>
-              <span className="font-serif text-2xl font-bold bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent">
-                {siteConfig.name}
-              </span>
+    <footer className="bbf">
+      <div className="bbf__inner">
+        <div className="bbf__grid">
+          {/* Marque */}
+          <div>
+            <Link to="/" className="bbf__brand">
+              Le <em>Gourmet</em>
             </Link>
-            <p className="text-secondary-foreground/60 text-sm leading-relaxed">
-              {siteConfig.shortDescription}
-            </p>
-            {/* Social Icons — affichés uniquement si une URL est configurée */}
+            <p className="bbf__desc">{siteConfig.shortDescription}</p>
             {socialLinks.length > 0 && (
-              <motion.div className="flex gap-4" variants={containerVariants}>
-                {socialLinks.map((social) => (
-                  <motion.a
-                    key={social.label}
-                    href={social.href}
+              <div className="bbf__social">
+                {socialLinks.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={social.label}
-                    variants={socialVariants}
-                    whileHover="hover"
-                    className="p-2.5 bg-gradient-to-br from-gold/10 to-yellow-300/5 rounded-lg border border-gold/20 hover:border-gold/50 transition-colors"
+                    aria-label={s.label}
                   >
-                    <social.icon className="h-5 w-5 text-gold" />
-                  </motion.a>
+                    <s.icon className="h-4 w-4" />
+                  </a>
                 ))}
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
 
-          {/* Quick Links */}
-          <motion.div variants={itemVariants}>
-            <h3 className="font-serif text-lg font-semibold mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-gradient-to-b from-gold to-yellow-300 rounded-full" />
-              Navigation
-            </h3>
-            <ul className="space-y-3">
-              {['Accueil', 'Notre Menu', 'Réservation', 'À propos', 'Contact'].map(
-                (item, idx) => {
-                  const routes = ['/', '/menu', '/reservation', '/about', '/contact'];
-                  return (
-                    <motion.li
-                      key={idx}
-                      whileHover={{ x: 8 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                    >
-                      <Link
-                        to={routes[idx]}
-                        className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm font-medium flex items-center gap-2 group"
-                      >
-                        {item}
-                        <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </Link>
-                    </motion.li>
-                  );
-                }
-              )}
-            </ul>
-          </motion.div>
-
-          {/* Hours */}
-          <motion.div variants={itemVariants}>
-            <h3 className="font-serif text-lg font-semibold mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-gradient-to-b from-gold to-yellow-300 rounded-full" />
-              Horaires
-            </h3>
-            <ul className="space-y-4">
-              {siteConfig.hours.map((schedule, idx) => (
-                <li key={idx}>
-                  <motion.div
-                    className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-gold/10 transition-colors border border-white/5 hover:border-gold/30"
-                    whileHover={{ y: -4 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  >
-                    <Clock className="h-4 w-4 mt-0.5 text-gold flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-secondary-foreground/80 text-sm">{schedule.day}</p>
-                      <p className="text-secondary-foreground/60 text-xs">{schedule.time}</p>
-                    </div>
-                  </motion.div>
+          {/* Navigation */}
+          <div>
+            <h3>Navigation</h3>
+            <ul>
+              {NAV.map((item) => (
+                <li key={item.to}>
+                  <Link to={item.to}>{item.label}</Link>
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
+
+          {/* Horaires */}
+          <div>
+            <h3>Horaires</h3>
+            <ul className="bbf__hours">
+              {siteConfig.hours.map((h) => (
+                <li key={h.day}>
+                  <b>{h.day}</b>
+                  <span>{h.time}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* Contact */}
-          <motion.div variants={itemVariants}>
-            <h3 className="font-serif text-lg font-semibold mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-gradient-to-b from-gold to-yellow-300 rounded-full" />
-              Contact
-            </h3>
-            <ul className="space-y-4">
+          <div>
+            <h3>Contact</h3>
+            <ul className="bbf__contact">
               <li>
-                <motion.div
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-gold/10 transition-colors border border-white/5 hover:border-gold/30"
-                  whileHover={{ y: -4 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                >
-                  <MapPin className="h-4 w-4 mt-0.5 text-gold flex-shrink-0" />
-                  <a
-                    href={siteConfig.contact.mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm"
-                  >
-                    {siteConfig.contact.addressStreet}
-                    <br />
-                    {siteConfig.contact.addressCity}, {siteConfig.contact.addressCountry}
-                  </a>
-                </motion.div>
+                <MapPin className="h-4 w-4" />
+                <a href={siteConfig.contact.mapUrl} target="_blank" rel="noopener noreferrer">
+                  {siteConfig.contact.addressStreet}
+                  <br />
+                  {siteConfig.contact.addressCity}, {siteConfig.contact.addressCountry}
+                </a>
               </li>
-
               <li>
-                <motion.div
-                  className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-gold/10 transition-colors border border-white/5 hover:border-gold/30"
-                  whileHover={{ y: -4 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                >
-                  <Phone className="h-4 w-4 text-gold flex-shrink-0" />
-                  <a
-                    href={siteConfig.contact.phoneLink}
-                    className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm font-medium"
-                  >
-                    {siteConfig.contact.phoneDisplay}
-                  </a>
-                </motion.div>
+                <Phone className="h-4 w-4" />
+                <a href={siteConfig.contact.phoneLink}>{siteConfig.contact.phoneDisplay}</a>
               </li>
-
               <li>
-                <motion.div
-                  className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-gold/10 transition-colors border border-white/5 hover:border-gold/30"
-                  whileHover={{ y: -4 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                >
-                  <MessageCircle className="h-4 w-4 text-gold flex-shrink-0" />
-                  <a
-                    href={whatsappUrl()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-secondary-foreground/60 hover:text-gold transition-colors text-sm font-medium"
-                  >
-                    Commander sur WhatsApp
-                  </a>
-                </motion.div>
+                <MessageCircle className="h-4 w-4" />
+                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                  Commander sur WhatsApp
+                </a>
+              </li>
+              <li>
+                <Clock className="h-4 w-4" />
+                <span>Service midi &amp; soir</span>
               </li>
             </ul>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        {/* Divider */}
-        <motion.div
-          className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-8 lg:mb-12"
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease: 'easeOut', delay: 0.4 }}
-        />
-
-        {/* Bottom Bar */}
-        <motion.div
-          className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <motion.p className="text-sm text-secondary-foreground/50" variants={itemVariants}>
-            © {new Date().getFullYear()} {siteConfig.name}. Tous droits réservés.
-          </motion.p>
-          <motion.div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" variants={containerVariants}>
-            {['Mentions légales', 'Politique de confidentialité'].map((item, idx) => {
-              const routes = ['/legal', '/privacy'];
-              return (
-                <motion.div key={idx} variants={itemVariants}>
-                  <Link
-                    to={routes[idx]}
-                    className="text-secondary-foreground/50 hover:text-gold transition-colors font-medium"
-                  >
-                    {item}
-                  </Link>
-                </motion.div>
-              );
-            })}
-            <motion.span className="text-secondary-foreground/40" variants={itemVariants}>
+        {/* Barre finale */}
+        <div className="bbf__bottom">
+          <span>© {new Date().getFullYear()} {siteConfig.name}. Tous droits réservés.</span>
+          <nav aria-label="Liens légaux">
+            <Link to="/legal">Mentions légales</Link>
+            <Link to="/privacy">Politique de confidentialité</Link>
+            <span>
               Site par{' '}
-              <a
-                href="https://abelbeingar.me"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gold/80 font-medium hover:text-gold transition-colors"
-              >
+              <a href="https://abelbeingar.me" target="_blank" rel="noopener noreferrer">
                 Abel Beingar
               </a>
-            </motion.span>
-          </motion.div>
-        </motion.div>
+            </span>
+          </nav>
+        </div>
       </div>
     </footer>
   );
