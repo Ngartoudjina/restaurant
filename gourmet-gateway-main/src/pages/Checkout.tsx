@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { CreditCard, Check, Loader2 } from 'lucide-react';
+import { CreditCard, Loader2 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -17,10 +13,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import axios from 'axios';
+import '@/styles/braise-bronze.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -33,14 +29,14 @@ const checkoutSchema = z.object({
   city: z.string().optional(),
   zipCode: z.string().optional(),
   cardNumber: z.string().min(16, 'Numéro de carte invalide'),
-  cardExpiry: z.string().min(5, 'Date d\'expiration invalide'),
+  cardExpiry: z.string().min(5, "Date d'expiration invalide"),
   cardCvc: z.string().min(3, 'CVC invalide'),
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function Checkout() {
-  const { items, total, discount, promoCode, clearCart } = useCart();
+  const { items, discount, promoCode, clearCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -52,6 +48,8 @@ export default function Checkout() {
   const deliveryFee = orderType === 'delivery' ? 2000 : 0; // 2000 FCFA
   const discountAmount = (subtotal * discount) / 100;
   const finalTotal = subtotal - discountAmount + deliveryFee;
+
+  const fcfa = (n: number) => `${n.toLocaleString('fr-FR')} FCFA`;
 
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
@@ -130,7 +128,7 @@ export default function Checkout() {
       const errorMessage = axios.isAxiosError(error)
         ? error.response?.data?.error || 'Impossible de créer la commande'
         : 'Une erreur est survenue';
-      
+
       toast({
         title: 'Erreur',
         description: errorMessage,
@@ -144,280 +142,295 @@ export default function Checkout() {
   if (items.length === 0) {
     return (
       <Layout>
-        <section className="py-20 text-center">
-          <h1 className="font-serif text-3xl font-bold mb-4">Panier vide</h1>
-          <p className="text-muted-foreground mb-8">
-            Ajoutez des articles avant de passer commande.
-          </p>
-          <Link to="/menu">
-            <Button className="bg-gold text-black hover:bg-gold-dark">Voir le menu</Button>
-          </Link>
-        </section>
+        <div className="mstate">
+          <div>
+            <h1
+              style={{
+                fontFamily: 'var(--bb-display)',
+                fontWeight: 600,
+                fontSize: 'clamp(1.8rem, 4vw, 2.6rem)',
+                color: 'var(--bb-ivory)',
+                margin: '0 0 0.8rem',
+              }}
+            >
+              Panier vide.
+            </h1>
+            <p style={{ margin: '0 0 2rem' }}>Ajoutez des articles avant de passer commande.</p>
+            <Link to="/menu" className="bb-btn bb-btn--bronze">
+              Voir le menu
+            </Link>
+          </div>
+        </div>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <h1 className="font-serif text-3xl md:text-4xl font-bold mb-8">
-            Finaliser la commande
+      {/* En-tête — la nuit */}
+      <section className="mhero" style={{ paddingBottom: 'clamp(2rem, 5vh, 3rem)' }}>
+        <div className="mhero__inner">
+          <p className="philo__eyebrow" style={{ color: 'var(--bb-bronze)' }}>
+            Dernière étape
+          </p>
+          <h1 className="mhero__title">
+            Passer <em>à table.</em>
           </h1>
+          <p className="mhero__sub">
+            {orderType === 'delivery' && 'Livraison à domicile — on arrive vite.'}
+            {orderType === 'takeaway' && 'Retrait au restaurant — ce sera prêt.'}
+            {orderType === 'dine-in' && 'Sur place — votre table vous attend.'}
+          </p>
+        </div>
+      </section>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Form */}
-            <div className="lg:col-span-2">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  {/* Contact Info */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Informations de contact</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="firstName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Prénom</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="lastName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Nom</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Email</FormLabel>
-                              <FormControl>
-                                <Input type="email" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Téléphone</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Delivery Address */}
-                  {orderType === 'delivery' && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">Adresse de livraison</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="address"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Adresse</FormLabel>
-                              <FormControl>
-                                <Input placeholder="15 rue de la Paix" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="city"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Ville</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Cotonou" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="zipCode"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Code postal</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="00229" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Payment */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-lg">
-                        <CreditCard className="h-5 w-5" />
-                        Paiement
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+      {/* Corps — le papier */}
+      <section className="resv-body">
+        <div className="resv-grid">
+          {/* Formulaire */}
+          <div className="rform">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} style={{ display: 'grid', gap: '2rem' }}>
+                {/* Contact */}
+                <div>
+                  <div className="rform__head">
+                    <h2 className="rform__title">Vos coordonnées</h2>
+                  </div>
+                  <div style={{ display: 'grid', gap: '1.4rem' }}>
+                    <div className="grid2">
                       <FormField
                         control={form.control}
-                        name="cardNumber"
+                        name="firstName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Numéro de carte</FormLabel>
+                            <span className="rlabel">Prénom</span>
                             <FormControl>
-                              <Input placeholder="4242 4242 4242 4242" {...field} />
+                              <input className="rinput" {...field} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="rerror" />
                           </FormItem>
                         )}
                       />
-                      <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <span className="rlabel">Nom</span>
+                            <FormControl>
+                              <input className="rinput" {...field} />
+                            </FormControl>
+                            <FormMessage className="rerror" />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="grid2">
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <span className="rlabel">Email</span>
+                            <FormControl>
+                              <input type="email" className="rinput" {...field} />
+                            </FormControl>
+                            <FormMessage className="rerror" />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <span className="rlabel">Téléphone</span>
+                            <FormControl>
+                              <input className="rinput" {...field} />
+                            </FormControl>
+                            <FormMessage className="rerror" />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Adresse de livraison */}
+                {orderType === 'delivery' && (
+                  <div>
+                    <div className="rform__head">
+                      <h2 className="rform__title">Adresse de livraison</h2>
+                    </div>
+                    <div style={{ display: 'grid', gap: '1.4rem' }}>
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <span className="rlabel">Adresse</span>
+                            <FormControl>
+                              <input className="rinput" placeholder="Carré, rue, repère…" {...field} />
+                            </FormControl>
+                            <FormMessage className="rerror" />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="grid2">
                         <FormField
                           control={form.control}
-                          name="cardExpiry"
+                          name="city"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Date d'expiration</FormLabel>
+                              <span className="rlabel">Ville</span>
                               <FormControl>
-                                <Input placeholder="MM/AA" {...field} />
+                                <input className="rinput" placeholder="Cotonou" {...field} />
                               </FormControl>
-                              <FormMessage />
+                              <FormMessage className="rerror" />
                             </FormItem>
                           )}
                         />
                         <FormField
                           control={form.control}
-                          name="cardCvc"
+                          name="zipCode"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>CVC</FormLabel>
+                              <span className="rlabel">Code postal</span>
                               <FormControl>
-                                <Input placeholder="123" {...field} />
+                                <input className="rinput" placeholder="00229" {...field} />
                               </FormControl>
-                              <FormMessage />
+                              <FormMessage className="rerror" />
                             </FormItem>
                           )}
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        * Ceci est une simulation. Aucun paiement réel ne sera effectué.
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-gold text-black hover:bg-gold-dark font-semibold"
-                    size="lg"
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        Traitement en cours...
-                      </>
-                    ) : (
-                      `Payer ${finalTotal.toLocaleString()} FCFA`
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </div>
-
-            {/* Order Summary */}
-            <div>
-              <Card className="sticky top-24">
-                <CardHeader>
-                  <CardTitle>Votre commande</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {items.map(item => (
-                    <div key={item.productId} className="flex justify-between text-sm">
-                      <span>
-                        {item.quantity}x {item.name}
-                      </span>
-                      <span>{(item.price * item.quantity).toLocaleString()} FCFA</span>
                     </div>
-                  ))}
+                  </div>
+                )}
 
-                  <Separator />
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Sous-total</span>
-                      <span>{subtotal.toLocaleString()} FCFA</span>
+                {/* Paiement */}
+                <div>
+                  <div className="rform__head">
+                    <h2 className="rform__title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <CreditCard className="h-5 w-5" style={{ color: 'var(--bb-bronze-ink)' }} />
+                      Paiement
+                    </h2>
+                    <span className="rform__note">Simulation — aucun débit réel</span>
+                  </div>
+                  <div style={{ display: 'grid', gap: '1.4rem' }}>
+                    <FormField
+                      control={form.control}
+                      name="cardNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <span className="rlabel">Numéro de carte</span>
+                          <FormControl>
+                            <input className="rinput" placeholder="4242 4242 4242 4242" {...field} />
+                          </FormControl>
+                          <FormMessage className="rerror" />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid2">
+                      <FormField
+                        control={form.control}
+                        name="cardExpiry"
+                        render={({ field }) => (
+                          <FormItem>
+                            <span className="rlabel">Expiration</span>
+                            <FormControl>
+                              <input className="rinput" placeholder="MM/AA" {...field} />
+                            </FormControl>
+                            <FormMessage className="rerror" />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="cardCvc"
+                        render={({ field }) => (
+                          <FormItem>
+                            <span className="rlabel">CVC</span>
+                            <FormControl>
+                              <input className="rinput" placeholder="123" {...field} />
+                            </FormControl>
+                            <FormMessage className="rerror" />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between text-sm text-green-600">
-                        <span>Réduction ({discount}%)</span>
-                        <span>-{discountAmount.toLocaleString()} FCFA</span>
-                      </div>
-                    )}
-                    {orderType === 'delivery' && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Livraison</span>
-                        <span>{deliveryFee.toLocaleString()} FCFA</span>
-                      </div>
-                    )}
                   </div>
+                </div>
 
-                  <Separator />
-
-                  <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
-                    <span className="text-gold">{finalTotal.toLocaleString()} FCFA</span>
-                  </div>
-
-                  <div className="p-3 bg-muted rounded-lg flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-600" />
-                    <span>
-                      {orderType === 'delivery' && 'Livraison à domicile'}
-                      {orderType === 'takeaway' && 'Retrait au restaurant'}
-                      {orderType === 'dine-in' && 'Sur place'}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                <button
+                  type="submit"
+                  className="bb-btn news__btn"
+                  style={{ width: '100%' }}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Traitement en cours…
+                    </>
+                  ) : (
+                    `Payer ${fcfa(finalTotal)}`
+                  )}
+                </button>
+              </form>
+            </Form>
           </div>
+
+          {/* Récapitulatif */}
+          <aside>
+            <div className="rform" style={{ position: 'sticky', top: 84 }}>
+              <div className="rform__head">
+                <h2 className="rform__title">Votre commande</h2>
+              </div>
+
+              <div>
+                {items.map((item) => (
+                  <div key={item.productId} className="sumrow">
+                    <span>
+                      {item.quantity}× {item.name}
+                    </span>
+                    <b>{fcfa(item.price * item.quantity)}</b>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--bb-hairline-ink)', marginTop: '0.8rem', paddingTop: '0.8rem' }}>
+                <div className="sumrow">
+                  <span>Sous-total</span>
+                  <b>{fcfa(subtotal)}</b>
+                </div>
+                {discount > 0 && (
+                  <div className="sumrow green">
+                    <span>Réduction ({discount}%)</span>
+                    <b>-{fcfa(discountAmount)}</b>
+                  </div>
+                )}
+                {orderType === 'delivery' && (
+                  <div className="sumrow">
+                    <span>Livraison</span>
+                    <b>{fcfa(deliveryFee)}</b>
+                  </div>
+                )}
+                <div className="sumtotal">
+                  <span className="lbl">Total</span>
+                  <span className="val">
+                    {finalTotal.toLocaleString('fr-FR')} <small>FCFA</small>
+                  </span>
+                </div>
+              </div>
+
+              <p className="rform__note" style={{ display: 'block', marginTop: '1.2rem' }}>
+                {orderType === 'delivery' && '🛵 Livraison à domicile'}
+                {orderType === 'takeaway' && '🛍️ Retrait au restaurant'}
+                {orderType === 'dine-in' && '🍽️ Sur place'}
+              </p>
+            </div>
+          </aside>
         </div>
       </section>
     </Layout>
